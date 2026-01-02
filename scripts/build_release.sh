@@ -9,6 +9,7 @@ ROOT_DIR="$(cd "$(dirname "$0")"/.. && pwd)"
 PROJECT="$ROOT_DIR/source/StopWatch/StopWatch.csproj"
 TFM="net10.0"
 DIST_DIR="$ROOT_DIR/dist"
+ICONS_DIR="$ROOT_DIR/source/StopWatch/icons"
 
 # Common publish options for single-file, self-contained apps
 PUBLISH_OPTS=(
@@ -27,19 +28,68 @@ mkdir -p "$DIST_DIR"
 
 echo "Using dotnet: $(dotnet --version)" && echo
 
-# macOS arm64 (produces .app bundle). We zip the .app into dist
+# --- macOS icon (.icns) generation from PNG ---
+ensure_macos_icns() {
+  local png="$ICONS_DIR/stopwatchimg.png"
+  local icns="$ICONS_DIR/stopwatch.icns"
+  if [[ ! -f "$png" ]]; then
+    echo "!! PNG icon not found: $png" >&2
+    return 0
+  fi
+  # Rebuild .icns if missing or older than PNG
+  if [[ ! -f "$icns" || "$png" -nt "$icns" ]]; then
+    if command -v sips >/dev/null 2>&1 && command -v iconutil >/dev/null 2>&1; then
+      local tmpdir
+      tmpdir="$(mktemp -d)"
+      local set="$tmpdir/stopwatch.iconset"
+      mkdir -p "$set"
+      # Generate required sizes
+      for size in 16 32 64 128 256 512; do
+        local dbl=$((size*2))
+        sips -z $size $size   "$png" --out "$set/icon_${size}x${size}.png" >/dev/null
+        sips -z $dbl  $dbl    "$png" --out "$set/icon_${size}x${size}@2x.png" >/dev/null
+      done
+      iconutil -c icns "$set" -o "$icns" >/dev/null
+      rm -rf "$tmpdir"
+      echo "Generated macOS .icns: $icns"
+    else
+      echo "!! 'sips' and 'iconutil' are required to build .icns. Skipping icon generation." >&2
+    fi
+  fi
+}
+
+# macOS arm64 (produces .app bundle). Kopiujemy .app bez pakowania do ZIP
 RID_OSX="osx-arm64"
 echo "==> Publishing macOS (arm64)"
+ensure_macos_icns
 dotnet publish "$PROJECT" "${PUBLISH_OPTS[@]}" -r "$RID_OSX" --self-contained true >/dev/null
 OSX_PUB="$ROOT_DIR/source/StopWatch/bin/Release/$TFM/$RID_OSX/publish"
 # App bundle name is derived from AssemblyName in csproj (StopWatch.app)
-if [[ -d "$OSX_PUB/StopWatch.app" ]]; then
-  (cd "$OSX_PUB" && zip -qry "$DIST_DIR/JiraStopWatchByKomasa-macos-arm64.zip" "StopWatch.app")
-  echo "   -> $DIST_DIR/JiraStopWatchByKomasa-macos-arm64.zip"
+MAC_APP_SRC="$OSX_PUB/StopWatch.app"
+MAC_APP_DST="$DIST_DIR/JiraStopWatchByKomasa.app"
+if [[ -d "$MAC_APP_SRC" ]]; then
+  rm -rf "$MAC_APP_DST"
+  if command -v ditto >/dev/null 2>&1; then
+    ditto "$MAC_APP_SRC" "$MAC_APP_DST"
+  else
+    cp -R "$MAC_APP_SRC" "$MAC_APP_DST"
+  fi
+  # Upewnij się, że plik wykonywalny ma prawa wykonywania
+  if [[ -f "$MAC_APP_DST/Contents/MacOS/StopWatch" ]]; then
+    chmod +x "$MAC_APP_DST/Contents/MacOS/StopWatch"
+  fi
+  # Usuń ewentualną flagę kwarantanny i odśwież cache ikon
+  if command -v xattr >/dev/null 2>&1; then
+    xattr -r -d com.apple.quarantine "$MAC_APP_DST" 2>/dev/null || true
+  fi
+  /usr/bin/touch "$MAC_APP_DST"
+  # Ad-hoc codesign to satisfy Gatekeeper when launching directly
+  if command -v codesign >/dev/null 2>&1; then
+    codesign --force --deep -s - --timestamp=none "$MAC_APP_DST" >/dev/null || true
+  fi
+  echo "   -> $MAC_APP_DST"
 else
-  # Fallback: zip all publish files
-  (cd "$OSX_PUB" && zip -qry "$DIST_DIR/JiraStopWatchByKomasa-macos-arm64.zip" .)
-  echo "   -> $DIST_DIR/JiraStopWatchByKomasa-macos-arm64.zip (no .app found, zipped publish folder)"
+  echo "   !! .app bundle not found in $OSX_PUB" >&2
 fi
 
 # Windows x64

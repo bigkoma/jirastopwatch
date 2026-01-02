@@ -42,6 +42,7 @@ public partial class MainWindow : Window
     private RestClientFactory restClientFactory;
     private JiraClient jiraClient;
     private TrayIcon _trayIcon;
+    private bool _trayWarningShown;
 
     public MainWindow()
     {
@@ -101,10 +102,10 @@ public partial class MainWindow : Window
         {
             if (Settings.Instance.MinimizeToTray && e.Property == Window.WindowStateProperty && WindowState == WindowState.Minimized)
             {
-                InitializeTrayIcon();
-                Hide();
-                if (_trayIcon != null)
-                    _trayIcon.IsVisible = true;
+                if (EnsureTrayOrWarn())
+                {
+                    Hide();
+                }
             }
         };
 
@@ -225,6 +226,22 @@ public partial class MainWindow : Window
             _trayIcon.IsVisible = true;
         }
         catch { }
+    }
+
+    private bool EnsureTrayOrWarn()
+    {
+        InitializeTrayIcon();
+        if (_trayIcon == null)
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && !_trayWarningShown)
+            {
+                _trayWarningShown = true;
+                _ = ShowMessage("Tray", "System tray not available. On Linux install appindicator library (e.g. libayatana-appindicator3). Window will not hide to tray.");
+            }
+            return false;
+        }
+        _trayIcon.IsVisible = true;
+        return true;
     }
 
     private void InitializeJiraComponents()
