@@ -1,25 +1,33 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="StopWatch.IssueControl">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="120"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="150"/>
-            <ColumnDefinition Width="70"/>
-            <ColumnDefinition Width="50"/>
-            <ColumnDefinition Width="50"/>
-            <ColumnDefinition Width="70"/>
-            <ColumnDefinition Width="70"/>
-        </Grid.ColumnDefinitions>
+    <Border Padding="6" Margin="0,2" BorderBrush="LightGray" BorderThickness="0,0,0,1">
+        <Grid RowDefinitions="Auto,Auto"
+              ColumnDefinitions="180,28,28,80,28,28,28,28">
+            <!-- ROW 0: Key + all actions -->
+            <TextBox x:Name="tbIssueKey" Grid.Row="0" Grid.Column="0" FontSize="14" Margin="0,0,6,0"/>
+            <Button Grid.Row="0" Grid.Column="1" Width="28" Height="28" ToolTip.Tip="Open in browser" Click="OpenInBrowser_Click">
+                <Image Source="avares://StopWatch/icons/openbrowser26.png" Width="18" Height="18"/>
+            </Button>
+            <Button x:Name="btnStartStop" Grid.Row="0" Grid.Column="2" Width="28" Height="28" Click="BtnStartStop_Click">
+                <Image Source="avares://StopWatch/icons/play26.png" Width="18" Height="18"/>
+            </Button>
+            <TextBox Grid.Row="0" Grid.Column="3" x:Name="tbTimeBox" Width="80" Height="28" Text="0m" IsReadOnly="True" HorizontalContentAlignment="Center"/>
+            <TextBlock x:Name="lblTime" Grid.Row="0" Grid.Column="3" IsVisible="False" Text="00:00:00"/>
+            <Button Grid.Row="0" Grid.Column="4" Width="28" Height="28" ToolTip.Tip="Reset">
+                <Image Source="avares://StopWatch/icons/reset24.png" Width="16" Height="16"/>
+            </Button>
+            <Button x:Name="btnLogWork" Grid.Row="0" Grid.Column="5" Width="28" Height="28" ToolTip.Tip="Post worklog" Click="BtnLogWork_Click"/>
+            <Button x:Name="btnRemove" Grid.Row="0" Grid.Column="6" Width="28" Height="28" ToolTip.Tip="Delete"/>
+            <Button x:Name="btnTransition" Grid.Row="0" Grid.Column="7" Width="28" Height="28" ToolTip.Tip="Mark Done" Click="BtnTransition_Click"/>
 
-        <TextBox x:Name="tbIssueKey" Grid.Column="0" Margin="0,0,5,0" FontSize="14"/>
-        <TextBlock x:Name="lblSummary" Grid.Column="1" Margin="0,0,5,0" TextTrimming="CharacterEllipsis" FontSize="14" Cursor="Hand" PointerPressed="LblSummary_PointerPressed"/>
-        <TextBox x:Name="tbComment" Grid.Column="2" Margin="0,0,5,0" Watermark="Comment" FontSize="14"/>
-        <TextBlock x:Name="lblTime" Grid.Column="3" Text="00:00:00" HorizontalAlignment="Center" FontWeight="Bold" FontSize="14"/>
-        <Button x:Name="btnStartStop" Grid.Column="4" Content="Start" Margin="0,0,2,0" Click="BtnStartStop_Click"/>
-        <Button x:Name="btnRemove" Grid.Column="5" Content="X" Margin="0,0,2,0"/>
-        <Button x:Name="btnLogWork" Grid.Column="6" Content="Log" Margin="0,0,2,0" Click="BtnLogWork_Click"/>
-        <Button x:Name="btnTransition" Grid.Column="7" Content="Done" Click="BtnTransition_Click"/>
-    </Grid>
+            <!-- ROW 1: Summary only (full width) -->
+            <TextBlock x:Name="lblSummary" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="8"
+                       TextTrimming="CharacterEllipsis" FontSize="13"
+                       Cursor="Hand" PointerPressed="LblSummary_PointerPressed"/>
+
+            <!-- Hidden comment editor preserved for logic -->
+            <TextBox x:Name="tbComment" Grid.Row="1" Grid.Column="0" IsVisible="False"/>
+        </Grid>
+    </Border>
 </UserControl>

@@ -31,7 +31,7 @@
     <None Include="Properties\Info.plist" Condition="Exists('Properties/Info.plist')" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="icons\**" />
+    <AvaloniaResource Include="icons\**" />
     
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,8 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using System;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 
 namespace StopWatch;
 
@@ -18,6 +20,9 @@ public partial class IssueControl : UserControl
     public IssueControl()
     {
         InitializeComponent();
+        // Wire text change handlers
+        tbIssueKey.TextChanged += TbIssueKey_TextChanged;
+        tbComment.TextChanged += TbComment_TextChanged;
     }
 
     public void SetIssue(IssueViewModel issue)
@@ -26,9 +31,10 @@ public partial class IssueControl : UserControl
         tbIssueKey.Text = issue.Key;
         tbComment.Text = issue.Comment;
         lblTime.Text = issue.Time;
+        tbTimeBox.Text = FormatMinutes(issue.Time);
         // Localize controls
         tbComment.Watermark = Localization.Localizer.T("Issue_Comment");
-        btnStartStop.Content = issue.IsRunning ? Localization.Localizer.T("Btn_Stop") : Localization.Localizer.T("Btn_Start");
+        SetStartStopIcon(issue.IsRunning);
         lblSummary.Text = ""; // Will be updated later
     }
 
@@ -75,22 +81,70 @@ public partial class IssueControl : UserControl
         IssueSummaryClicked?.Invoke(this, EventArgs.Empty);
     }
 
+    private void OpenInBrowser_Click(object sender, RoutedEventArgs e)
+    {
+        IssueSummaryClicked?.Invoke(this, EventArgs.Empty);
+    }
+
     public void UpdateTime(string time)
     {
         lblTime.Text = time;
+        tbTimeBox.Text = FormatMinutes(time);
     }
 
     public void UpdateStartStopButton(bool isRunning)
     {
-        btnStartStop.Content = isRunning ? Localization.Localizer.T("Btn_Stop") : Localization.Localizer.T("Btn_Start");
+        SetStartStopIcon(isRunning);
+    }
+
+    private void SetStartStopIcon(bool isRunning)
+    {
+        var uri = new Uri(isRunning ? "avares://StopWatch/icons/pause26.png" : "avares://StopWatch/icons/play26.png");
+        try
+        {
+            using var s = AssetLoader.Open(uri);
+            btnStartStop.Content = new Image { Source = new Bitmap(s), Width = 18, Height = 18 };
+        }
+        catch
+        {
+            btnStartStop.Content = isRunning ? "Stop" : "Start";
+        }
+    }
+
+    private static string FormatMinutes(string hhmmss)
+    {
+        try
+        {
+            if (TimeSpan.TryParse(hhmmss, out var t))
+            {
+                var m = (int)Math.Floor(t.TotalMinutes);
+                return m + "m";
+            }
+        }
+        catch { }
+        return "0m";
     }
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        // Localize static button captions
-        btnLogWork.Content = Localization.Localizer.T("Btn_Log");
-        btnRemove.Content = Localization.Localizer.T("Btn_Remove");
-        btnTransition.Content = Localization.Localizer.T("Btn_Done");
+        // Button captions/icons to match compact layout
+        btnLogWork.Content = "W"; // Worklog text
+        // Delete icon
+        try
+        {
+            var delUri = new Uri("avares://StopWatch/icons/delete24.png");
+            using var ds = AssetLoader.Open(delUri);
+            btnRemove.Content = new Image { Source = new Bitmap(ds), Width = 16, Height = 16 };
+        }
+        catch { btnRemove.Content = "X"; }
+        // Done/status icon
+        try
+        {
+            var doneUri = new Uri("avares://StopWatch/icons/posttimenote26.png");
+            using var s = AssetLoader.Open(doneUri);
+            btnTransition.Content = new Image { Source = new Bitmap(s), Width = 18, Height = 18 };
+        }
+        catch { btnTransition.Content = Localization.Localizer.Culture.TwoLetterISOLanguageName == "pl" ? "Za" : "Done"; }
     }
 }
