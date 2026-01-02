@@ -104,7 +104,16 @@ public partial class MainWindow : Window
             {
                 if (EnsureTrayOrWarn())
                 {
-                    Hide();
+                    // On macOS keep window minimized (Hide/Show can behave oddly)
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                    {
+                        WindowState = WindowState.Minimized;
+                    }
+                    else
+                    {
+                        Hide();
+                        if (_trayIcon != null) _trayIcon.IsVisible = true;
+                    }
                 }
             }
         };
@@ -154,11 +163,13 @@ public partial class MainWindow : Window
             btnStart.Content = Localization.Localizer.T("Btn_Start");
             btnPause.Content = Localization.Localizer.T("Btn_Pause");
             btnStop.Content = Localization.Localizer.T("Btn_Stop");
-            btnAddIssue.Content = Localization.Localizer.T("Btn_AddIssue");
+            // Keep icon-only buttons' content (Add, Help, Settings) intact to show images
+            // btnAddIssue.Content = Localization.Localizer.T("Btn_AddIssue");
             btnSubmitWorklog.Content = Localization.Localizer.T("Btn_SubmitWorklog");
-            btnSettings.Content = Localization.Localizer.T("Btn_Settings");
-            btnAbout.Content = Localization.Localizer.T("Btn_About");
-            btnHelp.Content = Localization.Localizer.T("Btn_Help");
+            // btnSettings.Content = Localization.Localizer.T("Btn_Settings");
+            // btnHelp.Content = Localization.Localizer.T("Btn_Help");
+            // About button hidden in the new UI; keep resource mapping but do not overwrite
+            // btnAbout.Content = Localization.Localizer.T("Btn_About");
             menuSettings.Header = Localization.Localizer.T("Menu_Settings");
             menuAbout.Header = Localization.Localizer.T("Menu_About");
             menuExit.Header = Localization.Localizer.T("Menu_Exit");
@@ -221,13 +232,32 @@ public partial class MainWindow : Window
             menu.Items.Add(showItem);
             menu.Items.Add(new NativeMenuItemSeparator());
             menu.Items.Add(exitItem);
-            _trayIcon.Menu = menu;
-            _trayIcon.Clicked += (_, __) => { Show(); WindowState = WindowState.Normal; Activate(); };
+            // Attach menu for right-click on all platforms (macOS shows it on left-click as well)
+            _trayIcon.Menu = menu; // right-click menu
+            _trayIcon.Clicked += (_, __) => ToggleTrayShowHide();
             _trayIcon.IsVisible = true;
         }
         catch { }
     }
 
+    private void ToggleTrayShowHide()
+    {
+        try
+        {
+            if (!IsVisible || WindowState == WindowState.Minimized)
+            {
+                Show();
+                WindowState = WindowState.Normal;
+                Activate();
+            }
+            else
+            {
+                // Prefer minimizing over Hide to avoid macOS tray click glitches
+                WindowState = WindowState.Minimized;
+            }
+        }
+        catch { }
+    }
     private bool EnsureTrayOrWarn()
     {
         InitializeTrayIcon();
@@ -343,7 +373,7 @@ public partial class MainWindow : Window
         }
     }
 
-    private void AddIssueControl(IssueViewModel issue)
+    private IssueControl AddIssueControl(IssueViewModel issue)
     {
         var issueControl = new IssueControl();
         issueControl.SetIssue(issue);
@@ -367,6 +397,7 @@ public partial class MainWindow : Window
 
         // Initially load summary if we have a key
         _ = UpdateIssueSummaryFromKey(issue, issueControl);
+        return issueControl;
     }
 
 
@@ -513,7 +544,22 @@ public partial class MainWindow : Window
     private void BtnAddIssue_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         string issueKey = tbIssueKey.Text?.Trim();
-        if (!string.IsNullOrEmpty(issueKey) && !issues.Any(i => i.Key == issueKey))
+        if (string.IsNullOrEmpty(issueKey))
+        {
+            var emptyIssue = new IssueViewModel
+            {
+                Key = string.Empty,
+                Time = "00:00:00",
+                Comment = string.Empty,
+                IsRunning = false
+            };
+            issues.Add(emptyIssue);
+            var c = AddIssueControl(emptyIssue);
+            c?.FocusIssueKey();
+            return;
+        }
+
+        if (!issues.Any(i => i.Key == issueKey))
         {
             var newIssue = new IssueViewModel
             {
@@ -523,7 +569,8 @@ public partial class MainWindow : Window
                 IsRunning = false
             };
             issues.Add(newIssue);
-            AddIssueControl(newIssue);
+            var c = AddIssueControl(newIssue);
+            c?.FocusIssueKey();
         }
     }
 
@@ -917,7 +964,7 @@ public partial class MainWindow : Window
         // await jiraClient.SubmitWorklog(issue.Key, TimeSpan.Parse(issue.Time), issue.Comment);
     }
 
-    private void BtnHelp_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private async void BtnHelp_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         // For now, just show a message. Could open help documentation later.
         var messageBox = new Window
@@ -926,6 +973,7 @@ public partial class MainWindow : Window
             Width = 300,
             Height = 200,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            Topmost = true,
             Content = new TextBlock
             {
                 Text = Localization.Localizer.T("Help_Content"),
@@ -933,7 +981,7 @@ public partial class MainWindow : Window
                 TextWrapping = Avalonia.Media.TextWrapping.Wrap
             }
         };
-        messageBox.Show();
+        await messageBox.ShowDialog(this);
     }
 
     private void MainWindow_Closed(object sender, System.EventArgs e)
@@ -1014,6 +1062,7 @@ public partial class MainWindow : Window
                 {
                     var summary = Settings.Instance.IncludeProjectName ? details.Fields.Project.Name + ": " + details.Fields.Summary : details.Fields.Summary;
                     issueControl.UpdateSummary(summary ?? "");
+                    issueControl.SetIssueKeyReadOnly(true);
                     var tooltip = details.Fields.Summary;
                     if (!string.IsNullOrEmpty(details.Fields.Description))
                     {

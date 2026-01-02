@@ -111,6 +111,16 @@ public partial class IssueControl : UserControl
         }
     }
 
+    public void SetIssueKeyReadOnly(bool readOnly)
+    {
+        try { tbIssueKey.IsReadOnly = readOnly; } catch { }
+    }
+
+    public void FocusIssueKey()
+    {
+        try { tbIssueKey.Focus(); } catch { }
+    }
+
     private static string FormatMinutes(string hhmmss)
     {
         try
