@@ -99,7 +99,7 @@ public partial class MainWindow : Window
         // Hide to tray on minimize if enabled
         this.PropertyChanged += (s, e) =>
         {
-            if (e.Property == Window.WindowStateProperty && WindowState == WindowState.Minimized)
+            if (Settings.Instance.MinimizeToTray && e.Property == Window.WindowStateProperty && WindowState == WindowState.Minimized)
             {
                 InitializeTrayIcon();
                 Hide();
@@ -107,6 +107,8 @@ public partial class MainWindow : Window
                     _trayIcon.IsVisible = true;
             }
         };
+
+        // Note: PropertyChanged hook above handles minimize-to-tray across platforms
 
         // Load persisted issues
         LoadPersistedIssues();
