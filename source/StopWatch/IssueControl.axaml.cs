@@ -103,7 +103,7 @@ public partial class IssueControl : UserControl
         try
         {
             using var s = AssetLoader.Open(uri);
-            btnStartStop.Content = new Image { Source = new Bitmap(s), Width = 18, Height = 18 };
+            btnStartStop.Content = new Image { Source = new Bitmap(s), Width = 16, Height = 16 };
         }
         catch
         {
@@ -145,7 +145,7 @@ public partial class IssueControl : UserControl
             btnRemove.Content = new Image { Source = new Bitmap(ds), Width = 16, Height = 16 };
         }
         catch { btnRemove.Content = "X"; }
-        // Done/status mark as check emoji
-        btnTransition.Content = "✅";
+        // Done/status mark as check emoji (smaller to avoid clipping)
+        btnTransition.Content = new TextBlock { Text = "✅", FontSize = 14, HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center };
     }
 }
