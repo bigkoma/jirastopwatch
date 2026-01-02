@@ -1,78 +1,6 @@
 ## Jira StopWatch by Komasa (v3.0)
 
-Language • Język: [Polski](#polski) | [English](#english)
-
----
-
-## Polski
-
-Nowa gałąź i nowe podejście do klasycznego narzędzia „Jira StopWatch”. Od wersji 3.0 projekt jest rozwijany jako „Jira StopWatch by Komasa” i nie jest kompatybilny wstecz z poprzednimi wydaniami, od których startowaliśmy.
-
-Autor nowego podejścia: Michał Komasa.
-
-### Pochodzenie projektu
-
-Projekt wywodzi się z otwarto‑źródłowego „Jira StopWatch” autorstwa Carstena Gehlinga (Apache 2.0). Dziękujemy społeczności za wieloletni wkład. Od wersji 3.0 wprowadzamy istotne zmiany architektury i technologii, dlatego konfiguracje, pliki ustawień oraz zachowanie aplikacji mogą różnić się od historycznego projektu i nie są z nim kompatybilne.
-
-### Status i zgodność
-
-- Wersja: 3.0 (pierwsze wydanie nowej linii)
-- Licencja: Apache 2.0 – zobacz LICENSE.txt
-- Platformy: macOS, Linux, Windows (x64 i ARM, jeśli wspierane przez .NET i system)
-
-### Technologie
-
-- .NET (TargetFramework: net10.0)
-- Avalonia UI 11 – wieloplatformowy interfejs graficzny
-- RestSharp – komunikacja z Jira REST API
-- NUnit + Moq – testy jednostkowe
-
-### Wymagania wstępne
-
-- Zainstalowany .NET SDK 10.0 lub nowszy (sprawdź: `dotnet --info`)
-- Na Linuksie wymagane mogą być systemowe biblioteki dla Avalonii (np. fontconfig, GTK3)
-
-### Szybki start (uruchomienie z kodu źródłowego)
-
-W katalogu głównym repozytorium:
-
-1. Przywróć i zbuduj:
-   - dotnet build StopWatch.sln
-2. Uruchom aplikację:
-   - dotnet run --project source/StopWatch/StopWatch.csproj
-
-### Budowanie pakietów na platformy
-
-Poniższe przykłady tworzą wydania Release. Dodaj opcję --self-contained true, aby dołączyć runtime .NET (większy pakiet, działa bez instalacji .NET).
-
-- Windows (x64):
-  - dotnet publish source/StopWatch/StopWatch.csproj -c Release -r win-x64 -p:PublishSingleFile=true
-
-- macOS (Intel i Apple Silicon):
-  - Intel: dotnet publish source/StopWatch/StopWatch.csproj -c Release -r osx-x64 -p:PublishSingleFile=true
-  - Apple Silicon: dotnet publish source/StopWatch/StopWatch.csproj -c Release -r osx-arm64 -p:PublishSingleFile=true
-  - Uwaga: w folderze publish powstaje struktura .app; pierwszy start może wymagać obejścia Gatekeepera (klik PPM → Otwórz).
-
-- Linux (x64/ARM64):
-  - x64: dotnet publish source/StopWatch/StopWatch.csproj -c Release -r linux-x64 -p:PublishSingleFile=true
-  - ARM64: dotnet publish source/StopWatch/StopWatch.csproj -c Release -r linux-arm64 -p:PublishSingleFile=true
-  - Uwaga: do uruchomienia mogą być potrzebne pakiety: fontconfig, libgtk-3.
-
-Artefakty znajdziesz w: source/StopWatch/bin/Release/{tfm}/{rid}/publish
-
-### Testy
-
-- Uruchom testy: dotnet test StopWatch.sln
-
-### Zmiana nazwy i niekompatybilność
-
-- Nowa nazwa: „Jira StopWatch by Komasa”
-- Start linii: wersja 3.0
-- Od tej wersji format ustawień, zachowanie i interfejs mogą odbiegać od projektu źródłowego i nie gwarantujemy kompatybilności.
-
-### Podziękowania
-
-Podziękowania dla Carstena Gehlinga oraz społeczności projektu „Jira StopWatch”, na którym bazowaliśmy historycznie. Projekt pozostaje open‑source (Apache 2.0).
+Language • Język: [English](#english) | [Polski](#polski)
 
 ---
 
@@ -145,4 +73,76 @@ Artifacts location: source/StopWatch/bin/Release/{tfm}/{rid}/publish
 ### Acknowledgements
 
 Thanks to Carsten Gehling and the community of the original “Jira StopWatch” the project historically builds upon. The project remains open‑source (Apache 2.0).
+
+---
+
+## Polski
+
+Nowa gałąź i nowe podejście do klasycznego narzędzia „Jira StopWatch”. Od wersji 3.0 projekt jest rozwijany jako „Jira StopWatch by Komasa” i nie jest kompatybilny wstecz z poprzednimi wydaniami, od których startowaliśmy.
+
+Autor nowego podejścia: Michał Komasa.
+
+### Pochodzenie projektu
+
+Projekt wywodzi się z otwarto‑źródłowego „Jira StopWatch” autorstwa Carstena Gehlinga (Apache 2.0). Dziękujemy społeczności za wieloletni wkład. Od wersji 3.0 wprowadzamy istotne zmiany architektury i technologii, dlatego konfiguracje, pliki ustawień oraz zachowanie aplikacji mogą różnić się od historycznego projektu i nie są z nim kompatybilne.
+
+### Status i zgodność
+
+- Wersja: 3.0 (pierwsze wydanie nowej linii)
+- Licencja: Apache 2.0 – zobacz LICENSE.txt
+- Platformy: macOS, Linux, Windows (x64 i ARM, jeśli wspierane przez .NET i system)
+
+### Technologie
+
+- .NET (TargetFramework: net10.0)
+- Avalonia UI 11 – wieloplatformowy interfejs graficzny
+- RestSharp – komunikacja z Jira REST API
+- NUnit + Moq – testy jednostkowe
+
+### Wymagania wstępne
+
+- Zainstalowany .NET SDK 10.0 lub nowszy (sprawdź: `dotnet --info`)
+- Na Linuksie wymagane mogą być systemowe biblioteki dla Avalonii (np. fontconfig, GTK3)
+
+### Szybki start (uruchomienie z kodu źródłowego)
+
+W katalogu głównym repozytorium:
+
+1. Przywróć i zbuduj:
+   - dotnet build StopWatch.sln
+2. Uruchom aplikację:
+   - dotnet run --project source/StopWatch/StopWatch.csproj
+
+### Budowanie pakietów na platformy
+
+Poniższe przykłady tworzą wydania Release. Dodaj opcję --self-contained true, aby dołączyć runtime .NET (większy pakiet, działa bez instalacji .NET).
+
+- Windows (x64):
+  - dotnet publish source/StopWatch/StopWatch.csproj -c Release -r win-x64 -p:PublishSingleFile=true
+
+- macOS (Intel i Apple Silicon):
+  - Intel: dotnet publish source/StopWatch/StopWatch.csproj -c Release -r osx-x64 -p:PublishSingleFile=true
+  - Apple Silicon: dotnet publish source/StopWatch/StopWatch.csproj -c Release -r osx-arm64 -p:PublishSingleFile=true
+  - Uwaga: w folderze publish powstaje struktura .app; pierwszy start może wymagać obejścia Gatekeepera (klik PPM → Otwórz).
+
+- Linux (x64/ARM64):
+  - x64: dotnet publish source/StopWatch/StopWatch.csproj -c Release -r linux-x64 -p:PublishSingleFile=true
+  - ARM64: dotnet publish source/StopWatch/StopWatch.csproj -c Release -r linux-arm64 -p:PublishSingleFile=true
+  - Uwaga: do uruchomienia mogą być potrzebne pakiety: fontconfig, libgtk-3.
+
+Artefakty znajdziesz w: source/StopWatch/bin/Release/{tfm}/{rid}/publish
+
+### Testy
+
+- Uruchom testy: dotnet test StopWatch.sln
+
+### Zmiana nazwy i niekompatybilność
+
+- Nowa nazwa: „Jira StopWatch by Komasa”
+- Start linii: wersja 3.0
+- Od tej wersji format ustawień, zachowanie i interfejs mogą odbiegać od projektu źródłowego i nie gwarantujemy kompatybilności.
+
+### Podziękowania
+
+Podziękowania dla Carstena Gehlinga oraz społeczności projektu „Jira StopWatch”, na którym bazowaliśmy historycznie. Projekt pozostaje open‑source (Apache 2.0).
 
