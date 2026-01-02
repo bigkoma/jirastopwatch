@@ -1,208 +1,148 @@
-[![Gitter chat](https://badges.gitter.im/jirastopwatch.png)](https://gitter.im/jirastopwatch "Gitter chat")
+## Jira StopWatch by Komasa (v3.0)
 
-## Maintainer wanted!
+Language • Język: [Polski](#polski) | [English](#english)
 
-**As I have switched job and no longer use Jira in my daily work, the incentive to actively maintain Jira StopWatch has declined for me. So I am looking for someone, who would like to take over the project. Please write me at carsten@sarum.dk, if you are interested. My only demand is, that it is kept open-source.**
+---
 
-## Summary
+## Polski
 
-A Windows desktop tool for recording time spent on different Jira tasks.
+Nowa gałąź i nowe podejście do klasycznego narzędzia „Jira StopWatch”. Od wersji 3.0 projekt jest rozwijany jako „Jira StopWatch by Komasa” i nie jest kompatybilny wstecz z poprzednimi wydaniami, od których startowaliśmy.
 
-![](http://jirastopwatch.com/img/screen2.png)
+Autor nowego podejścia: Michał Komasa.
 
-## Features, download and installation:
+### Pochodzenie projektu
 
-Read all about features on [the product homepage](http://jirastopwatch.com).
+Projekt wywodzi się z otwarto‑źródłowego „Jira StopWatch” autorstwa Carstena Gehlinga (Apache 2.0). Dziękujemy społeczności za wieloletni wkład. Od wersji 3.0 wprowadzamy istotne zmiany architektury i technologii, dlatego konfiguracje, pliki ustawień oraz zachowanie aplikacji mogą różnić się od historycznego projektu i nie są z nim kompatybilne.
 
-Documentaion about [how to download, install, and use Jira StopWatch](http://jirastopwatch.com/doc/)
-is also available.
+### Status i zgodność
 
-Feature-requests are more than welcome :-)
+- Wersja: 3.0 (pierwsze wydanie nowej linii)
+- Licencja: Apache 2.0 – zobacz LICENSE.txt
+- Platformy: macOS, Linux, Windows (x64 i ARM, jeśli wspierane przez .NET i system)
 
-## Mac OSX and Linux users
+### Technologie
 
-Jira StopWatch has been compiled and tested to work on Linux Mint 17.0 with the [Xamarin packages](http://www.mono-project.com/download/#download-lin).
+- .NET (TargetFramework: net10.0)
+- Avalonia UI 11 – wieloplatformowy interfejs graficzny
+- RestSharp – komunikacja z Jira REST API
+- NUnit + Moq – testy jednostkowe
 
-Anyone with a MacOSX available: I would love to know if everything works out of the box.
+### Wymagania wstępne
 
-## License
+- Zainstalowany .NET SDK 10.0 lub nowszy (sprawdź: `dotnet --info`)
+- Na Linuksie wymagane mogą być systemowe biblioteki dla Avalonii (np. fontconfig, GTK3)
 
-Apache License version 2.0 - please read [LICENSE.txt](LICENSE.txt)
+### Szybki start (uruchomienie z kodu źródłowego)
 
-## Feedback
+W katalogu głównym repozytorium:
 
-Bug reports, feature requests etc. are welcome. Please use Github for this.
+1. Przywróć i zbuduj:
+   - dotnet build StopWatch.sln
+2. Uruchom aplikację:
+   - dotnet run --project source/StopWatch/StopWatch.csproj
 
-## Externals
+### Budowanie pakietów na platformy
 
-The application depend on [RestSharp](https://github.com/restsharp/RestSharp) for all communication with Jira.
+Poniższe przykłady tworzą wydania Release. Dodaj opcję --self-contained true, aby dołączyć runtime .NET (większy pakiet, działa bez instalacji .NET).
 
-All icons on buttons were downloaded from [Icons8](https://icons8.com).
+- Windows (x64):
+  - dotnet publish source/StopWatch/StopWatch.csproj -c Release -r win-x64 -p:PublishSingleFile=true
 
-## Changelog
+- macOS (Intel i Apple Silicon):
+  - Intel: dotnet publish source/StopWatch/StopWatch.csproj -c Release -r osx-x64 -p:PublishSingleFile=true
+  - Apple Silicon: dotnet publish source/StopWatch/StopWatch.csproj -c Release -r osx-arm64 -p:PublishSingleFile=true
+  - Uwaga: w folderze publish powstaje struktura .app; pierwszy start może wymagać obejścia Gatekeepera (klik PPM → Otwórz).
 
-<pre>
-2.2.0     2017-10-31     New features/improvements:
-                           - Log work using actual start time (Thanks to Adam Conway)
-                           - Use Jira's hour/day configuration when presenting time
-                             (eg. 8 hours = 1 day) (Again thank you Adam Conway)
-                           - Posting worklog will always round up recorded time to nearest minute.
+- Linux (x64/ARM64):
+  - x64: dotnet publish source/StopWatch/StopWatch.csproj -c Release -r linux-x64 -p:PublishSingleFile=true
+  - ARM64: dotnet publish source/StopWatch/StopWatch.csproj -c Release -r linux-arm64 -p:PublishSingleFile=true
+  - Uwaga: do uruchomienia mogą być potrzebne pakiety: fontconfig, libgtk-3.
 
-2.1.0     2017-08-16     New features/improvements
-                           - HTTPS connections are now forced to use TLS 1.1 or newer.
-						   - Optional display of issue's project name.
-						   - Added ellipsis for long issue summaries.
+Artefakty znajdziesz w: source/StopWatch/bin/Release/{tfm}/{rid}/publish
 
-                         Bugfixes
-						   - Fixed random disappearing issue summaries.
-						   - Submit worklog accepts 0 without any unit as remaining time.
- 
-2.0.1     2017-04-10     Bugfixes
-                           - System tray icon missing when minimizing to tray.
-                           - Always use current screen instead of main screen for calculating
-                             maximum height of main window.
+### Testy
 
-2.0.0     2017-03-23     New features/improvements
-                           - Added keyboard shortcuts to operate most important functions.
-                           - Moved user credentials into settings window instead of
-                             separate login window.
-                           - Added Jira's default filter "My open issues" as hard-coded
-                             first filter.
-                           - Added a help button, that links to the new documentation homepage.
+- Uruchom testy: dotnet test StopWatch.sln
 
-                         Bugfixes
-                           - If the user config file got corrupt, StopWatch would not start.
-                           - Worklog could not be submitted, if user's regional setting was
-                             set to eg. Swedish because of a different date format.
-                           - When manually editing timer, total time was not updated instantly.
+### Zmiana nazwy i niekompatybilność
 
-1.9.0     2017-01-24     New features/improvements
-                           - Issue rows are now added/removed directly from the UI instead of
-                             from inside the settings dialog. (Thanks to Adam Conway for this)
-                           - When posting worklog, remaining estimate can now be edited the same
-                             way as in Jira. (Thanks to Adam Conway for this)
-                           - Display version info on titlebar.
-                           - Keep existing settings on version upgrade.
-                           - Misc. UI improvements (coloring, repositioning UI items, etc.)
-                           - Optionally autostart an issue (setting "In progress") when pressing play
-                             on timer.
-                           - Optional logging of Jira API communication for debugging purposes.
-                           - Copy/paste of Jira URL into issue combobox now extracts the issue key.
-                           - Click on "Not connected" will now display the connection problems in a dialog.
+- Nowa nazwa: „Jira StopWatch by Komasa”
+- Start linii: wersja 3.0
+- Od tej wersji format ustawień, zachowanie i interfejs mogą odbiegać od projektu źródłowego i nie gwarantujemy kompatybilności.
 
-                         Bugfixes:
-                           - Active timers total time did not get stored when using the setting
-                             "pause active timer".
+### Podziękowania
 
-1.8.0     2016-10-05     New features/improvements:
-                           - When submitting worklog, StartTime will also be set. The value
-                             will be equal to "now minus logged work-time".
-                             Kudos to [Lee Houghton](https://github.com/asztal)
-                             for making this PR.
-                           - UI now handles Windows' zoom settings much better.
-                           - Timers and settings are now saved continously instead of only
-                             at program exit. So no data loss if you get power-outs or PC crash.
-                           - Issue dropdown box will now retrieve up to 200 issues, instead of
-                             the API-default of 50.
-							 
-                         Bugfixes:
-                           - Fixed random startup crashes.
-                           - If issue keys are very long, they could be cropped in the dropdown
-                             box. This has been fixed, so the key column width adapts to the
-                             widest key.
-                      
-1.7.0     2016-06-25     New features/improvements:
-                           - Edit timer is now always enabled - you edit by double-clicking
-                             the time field. 
-                           - StopWatch now only runs single instance - it detects at startup
-                             if another instance is running, and brings it into focus.
-                           - New icon that is visible on dark Windows 10 taskbar theme.
-                           - Timers now also support days - eg. 2d 13h 34m
+Podziękowania dla Carstena Gehlinga oraz społeczności projektu „Jira StopWatch”, na którym bazowaliśmy historycznie. Projekt pozostaje open‑source (Apache 2.0).
 
-                         Bugfixes:
-                           - After version 1.6.1 the Jira session might  timeout. If this
-                             happens, StopWatch will now automatically re-authenticate and
-                             retry the requests. 
-                           - When you activate many timers, the StopWatch window might be
-                             too big for the screen. Now the window will not be higher than
-                             desktop size, and instead a scrollbar gives access to the
-                             remaining issues. 
-                           - Minimize to tray sometimes did not show the system tray icon.
-                           - Dropdown box with issue list only updated the description below
-                             when leaving the field. Now it happens on selection + on <enter>
-                             if you manually write a key.
-                           - Requests to Jira API did not work, if the issue key had leading
-                             spaces eg. " OPS-14". This has been fixed.
+---
 
-1.6.1     2016-04-18     Changed filter- and issue-loading from Jira API, to only happen
-                         when comboboxes are opened, instead of every 30 seconds as before.
+## English
 
-1.6.0     2016-04-09     New features:
-                           - Allow multiple timers to run at the same time
-                           - Choose if worklog text should be posted on worklog track or
-                             comment track
-                           - Display total time in bottom of window
+This is a new branch and approach to the classic “Jira StopWatch”. Starting with version 3.0 the project is developed as “Jira StopWatch by Komasa” and is not backward compatible with the legacy releases we originated from.
 
-                         Bugfixes:
-                          - Issue description was not updated when manually typing an
-                            issue key or deleting a key
-                          - notifyIcon is not available on Mono, so on non-Windows
-                            platforms, disable all minimze-to-tray code
-                          - Fixed thread UI issue
+Author of the new approach: Michał Komasa.
 
-                         Remade project structure to make crossplatform building easier
+### Project origins
 
-                         Refactoring of internal Jira communication (including NUnit
-                         test-coverage)
+The project originates from the open‑source “Jira StopWatch” by Carsten Gehling (Apache 2.0). Many thanks to the community for years of contributions. From v3.0 we introduce significant architectural and technology changes; configuration, settings files and application behavior may differ from the legacy project and are not compatible with it.
 
-1.5.0     2016-02-07     Option for pausing timer when locking your PC 
-                         (eg. for lunch breaks)
+### Status and compatibility
 
-                         Application can now be minimized to the system tray
+- Version: 3.0 (first release of the new line)
+- License: Apache 2.0 – see LICENSE.txt
+- Platforms: macOS, Linux, Windows (x64 and ARM, as supported by .NET and the OS)
 
-                         Several bugfixes - for details see the commit history
+### Technologies
 
-1.4.1     2016-01-02     Added About dialog
+- .NET (TargetFramework: net10.0)
+- Avalonia UI 11 – cross‑platform desktop UI
+- RestSharp – Jira REST API communication
+- NUnit + Moq – unit testing
 
-1.4.0     2015-12-25     Worklog comments can now be saved without posting to Jira immediately.  Useful
-                         if your task takes a long time and you want to note down your progress while
-						 waiting to submit the worklog until the end.
+### Prerequisites
 
-						 New option to enable timers to be editable. Useful if you forgot to start the
-						 timer when starting work. Times can be entered both Jira style like 1h 15m and
-						 the "classic" way like 1.25h.
+- .NET SDK 10.0 or newer installed (check: `dotnet --info`)
+- On Linux you may need system packages for Avalonia (e.g., fontconfig, GTK3)
 
-						 Thanks goes to [Seth Feldkamp](https://github.com/sfeldkamp) for the ideas to
-						 both features and for testing.
+### Quick start (from source)
 
-1.3.1     2015-12-16     Cosmetic UI tweaks. My computer was running with a default zoom-level of 125%,
-                         which meant that things did not look correct on default zoom level.
+From the repository root:
 
-1.3.0     2015-11-11     Issues can now be selected from a list of available issues  - this list is
-                         controlled by selecting between your favourite JQL filters
+1) Restore and build:
+   - dotnet build StopWatch.sln
+2) Run the app:
+   - dotnet run --project source/StopWatch/StopWatch.csproj
 
-1.2.0     2015-10-19     Save time-tracking state, so stopwatch continue to "run" after quitting program
+### Building platform packages
 
-                         Automatic re-login, if Jira session has expired
+The following examples produce Release builds. Add --self-contained true to bundle the .NET runtime (larger output, runs without .NET installed).
 
-                         Visual Jira connection status
+- Windows (x64):
+  - dotnet publish source/StopWatch/StopWatch.csproj -c Release -r win-x64 -p:PublishSingleFile=true
 
-                         Fixed tab-order on controls
+- macOS (Intel and Apple Silicon):
+  - Intel: dotnet publish source/StopWatch/StopWatch.csproj -c Release -r osx-x64 -p:PublishSingleFile=true
+  - Apple Silicon: dotnet publish source/StopWatch/StopWatch.csproj -c Release -r osx-arm64 -p:PublishSingleFile=true
+  - Note: the publish folder contains a .app bundle; on first run you may need to bypass Gatekeeper (right‑click → Open).
 
-1.1.1     2015-10-09     Fixed problems with main window being "Always on top" and the applications
-                         other dialog boxes
+- Linux (x64/ARM64):
+  - x64: dotnet publish source/StopWatch/StopWatch.csproj -c Release -r linux-x64 -p:PublishSingleFile=true
+  - ARM64: dotnet publish source/StopWatch/StopWatch.csproj -c Release -r linux-arm64 -p:PublishSingleFile=true
+  - Note: you may need packages like fontconfig, libgtk-3 to run the app.
 
-1.1.0     2015-10-09     Changed all icons to https://icons8.com
+Artifacts location: source/StopWatch/bin/Release/{tfm}/{rid}/publish
 
-                         New feature: Post worklog to Jira with a comment
+### Tests
 
-1.0.5     2015-10-07     Nicer buttons + tooltips
+- Run tests: dotnet test StopWatch.sln
 
-1.0.4     2015-09-30     Clear summary label when issue key is empty
+### Renaming and incompatibility
 
-1.0.3     2015-09-28     Remember login credentials with DPAPI
+- New name: “Jira StopWatch by Komasa”
+- New line starts at version 3.0
+- From this version, settings format, behavior and UI may differ from the legacy project and are not guaranteed to be compatible.
 
-1.0.2     2015-09-28     Integration with Jira: Async load issue summary
+### Acknowledgements
 
-1.0.1     2015-09-25     First release with setup program
-</pre>
+Thanks to Carsten Gehling and the community of the original “Jira StopWatch” the project historically builds upon. The project remains open‑source (Apache 2.0).
+
