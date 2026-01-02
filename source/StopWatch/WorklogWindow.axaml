@@ -1,0 +1,27 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="StopWatch.WorklogWindow"
+        Title="Submit Worklogs"
+        Width="500"
+        Height="400">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" x:Name="headerText" Text="Worklog Summary" FontSize="16" FontWeight="Bold" Margin="10"/>
+        
+        <ScrollViewer Grid.Row="1" Margin="10">
+            <StackPanel x:Name="worklogPanel">
+                <!-- Worklog items will be added here -->
+            </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+            <Button x:Name="btnSubmit" Content="Submit All" Click="BtnSubmit_OnClick" Margin="0,0,10,0"/>
+            <Button x:Name="btnCancel" Content="Cancel" Click="BtnCancel_OnClick"/>
+        </StackPanel>
+    </Grid>
+</Window>

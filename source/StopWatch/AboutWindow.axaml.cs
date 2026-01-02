@@ -1,0 +1,74 @@
+using Avalonia.Controls;
+using Avalonia.Interactivity;
+using System;
+
+namespace StopWatch;
+
+public partial class AboutWindow : Window
+{
+    public AboutWindow()
+    {
+        InitializeComponent();
+        ApplyLocalization();
+        lblNameVersion.Text = $"{GetProductName()} v. {GetProductVersion()}";
+    }
+
+    private void ApplyLocalization()
+    {
+        try
+        {
+            Title = Localization.Localizer.T("About_Title");
+            lblNameVersion.Text = $"{Localization.Localizer.T("About_ProductName")} v. {GetProductVersion()}";
+            
+            // Find and update the copyright/license text block
+            var copyrightBlock = this.FindControl<TextBlock>("CopyrightBlock");
+            if (copyrightBlock != null)
+            {
+                copyrightBlock.Text = $"{Localization.Localizer.T("About_Copyright")}\n{Localization.Localizer.T("About_License")}";
+            }
+            
+            // Find and update link texts
+            var readLicenseLink = this.FindControl<TextBlock>("ReadLicenseLink");
+            if (readLicenseLink != null) readLicenseLink.Text = Localization.Localizer.T("About_ReadLicense");
+            
+            var visitHomepageLink = this.FindControl<TextBlock>("VisitHomepageLink");
+            if (visitHomepageLink != null) visitHomepageLink.Text = Localization.Localizer.T("About_VisitHomepage");
+            
+            // Update button text
+            btnOk.Content = Localization.Localizer.T("About_Close");
+        }
+        catch { }
+    }
+
+    private void BtnOk_OnClick(object sender, RoutedEventArgs e)
+    {
+        Close();
+    }
+
+    private void License_Tapped(object sender, Avalonia.Input.TappedEventArgs e)
+    {
+        CrossPlatformHelpers.OpenUrl("http://www.apache.org/licenses/LICENSE-2.0");
+    }
+
+    private void Homepage_Tapped(object sender, Avalonia.Input.TappedEventArgs e)
+    {
+        CrossPlatformHelpers.OpenUrl("http://jirastopwatch.com");
+    }
+
+    private static string GetProductName()
+    {
+        return "Jira StopWatch";
+    }
+
+    private static string GetProductVersion()
+    {
+        try
+        {
+            return typeof(AboutWindow).Assembly.GetName().Version?.ToString() ?? "";
+        }
+        catch
+        {
+            return "";
+        }
+    }
+}

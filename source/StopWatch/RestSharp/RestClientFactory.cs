@@ -29,13 +29,16 @@ namespace StopWatch
         }
 
 
-        public IRestClient Create(bool invalidateCookies = false)
+        public RestClient Create(bool invalidateCookies = false)
         {
             if (invalidateCookies)
                 cookieContainer = new CookieContainer();
 
-            RestClient client = new RestClient(BaseUrl);
-            client.CookieContainer = cookieContainer;
+            var options = new RestClientOptions(BaseUrl)
+            {
+                CookieContainer = cookieContainer
+            };
+            RestClient client = new RestClient(options);
             return client;
         }
 

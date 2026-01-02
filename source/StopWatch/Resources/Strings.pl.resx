@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <!-- Okno podsumowania worklogów -->
+  <data name="Worklog_SubmitTitle" xml:space="preserve"><value>Wyślij wpisy czasu</value></data>
+  <data name="Worklog_SummaryHeader" xml:space="preserve"><value>Podsumowanie worklogów</value></data>
+  <data name="Worklog_SubmitAll" xml:space="preserve"><value>Wyślij wszystkie</value></data>
+  <data name="Worklog_Submitting" xml:space="preserve"><value>Wysyłanie…</value></data>
+  <data name="Msg_Success" xml:space="preserve"><value>Sukces</value></data>
+  <data name="Worklog_SubmitSuccess" xml:space="preserve"><value>Pomyślnie wysłano wpisy dla {0} zadań.</value></data>
+  <data name="Worklog_SubmitError" xml:space="preserve"><value>Nie udało się wysłać wpisów: {0}</value></data>
+  <data name="App_Title" xml:space="preserve"><value>JiraStopwatch</value></data>
+  <data name="Menu_File" xml:space="preserve"><value>Plik</value></data>
+  <data name="Menu_Settings" xml:space="preserve"><value>Ustawienia</value></data>
+  <data name="Menu_Exit" xml:space="preserve"><value>Zakończ</value></data>
+  <data name="Menu_Tools" xml:space="preserve"><value>Narzędzia</value></data>
+  <data name="Menu_About" xml:space="preserve"><value>O programie</value></data>
+  <data name="Lbl_Issue" xml:space="preserve"><value>Zadanie:</value></data>
+  <data name="Btn_Start" xml:space="preserve"><value>Start</value></data>
+  <data name="Btn_Pause" xml:space="preserve"><value>Pauza</value></data>
+  <data name="Btn_Stop" xml:space="preserve"><value>Stop</value></data>
+  <data name="Lbl_Total" xml:space="preserve"><value>Suma:</value></data>
+  <data name="Btn_AddIssue" xml:space="preserve"><value>Dodaj zadanie</value></data>
+  <data name="Btn_SubmitWorklog" xml:space="preserve"><value>Wyślij wpisy</value></data>
+  <data name="Btn_Settings" xml:space="preserve"><value>Ustawienia</value></data>
+  <data name="Btn_About" xml:space="preserve"><value>O programie</value></data>
+  <data name="SaveTimer_ResetAll" xml:space="preserve"><value>Resetuj wszystkie timery przy wyjściu</value></data>
+  <data name="SaveTimer_SavePause" xml:space="preserve"><value>Zapisz czas, wstrzymaj aktywny timer</value></data>
+  <data name="SaveTimer_SaveContinue" xml:space="preserve"><value>Zapisz czas, aktywny timer kontynuuje</value></data>
+  <data name="Pause_None" xml:space="preserve"><value>Bez pauzy</value></data>
+  <data name="Pause_Pause" xml:space="preserve"><value>Wstrzymaj aktywny timer</value></data>
+  <data name="Pause_PauseResume" xml:space="preserve"><value>Pauza i wznowienie po odblokowaniu</value></data>
+  <data name="PostComment_WorklogOnly" xml:space="preserve"><value>Publikuj tylko w ramach worklogu</value></data>
+  <data name="PostComment_CommentOnly" xml:space="preserve"><value>Publikuj tylko jako komentarz</value></data>
+  <data name="PostComment_Both" xml:space="preserve"><value>Publikuj jako worklog i komentarz</value></data>
+  <data name="Btn_Help" xml:space="preserve"><value>Pomoc</value></data>
+  <data name="Lbl_ActiveFilter" xml:space="preserve"><value>Aktywny filtr:</value></data>
+  <data name="Status_NotConnected" xml:space="preserve"><value>Jira nie skonfigurowana</value></data>
+  <data name="Status_Connecting" xml:space="preserve"><value>Łączenie z Jira…</value></data>
+  <data name="Status_ConnectionError" xml:space="preserve"><value>Błąd połączenia: {0}</value></data>
+  <data name="Status_ConnectedLoaded" xml:space="preserve"><value>Połączono – załadowano {0} zgłoszeń</value></data>
+  <data name="Status_LoadError" xml:space="preserve"><value>Błąd ładowania zgłoszeń: {0}</value></data>
+  <data name="Issue_Comment" xml:space="preserve"><value>Komentarz</value></data>
+  <data name="Btn_Log" xml:space="preserve"><value>Wyślij</value></data>
+  <data name="Btn_Done" xml:space="preserve"><value>Zakończone</value></data>
+  <data name="Filter_All" xml:space="preserve"><value>Wszystkie zgłoszenia</value></data>
+  <data name="Filter_Mine" xml:space="preserve"><value>Moje zadania</value></data>
+  <data name="Filter_Recent" xml:space="preserve"><value>Ostatnie</value></data>
+  <data name="NoFilterSelected" xml:space="preserve"><value>Nie wybrano filtra</value></data>
+  <data name="Msg_Title_NotConfigured" xml:space="preserve"><value>Jira nie skonfigurowana</value></data>
+  <data name="Msg_Body_NotConfigured" xml:space="preserve"><value>Najpierw skonfiguruj ustawienia Jira.</value></data>
+  <data name="Msg_Title_NoWorklogs" xml:space="preserve"><value>Brak wpisów do wysłania</value></data>
+  <data name="Msg_Body_NoWorklogs" xml:space="preserve"><value>Brak zadań z zarejestrowanym czasem.</value></data>
+  <data name="Msg_Title_Error" xml:space="preserve"><value>Błąd</value></data>
+  <data name="Msg_Body_SubmitFailed" xml:space="preserve"><value>Nie udało się wysłać workloga. Sprawdź ustawienia i uprawnienia Jira.</value></data>
+  <data name="Tray_Show" xml:space="preserve"><value>Pokaż</value></data>
+  <data name="Tray_Exit" xml:space="preserve"><value>Zakończ</value></data>
+
+  <data name="Settings_Title" xml:space="preserve"><value>Ustawienia</value></data>
+  <data name="JiraSettings_Header" xml:space="preserve"><value>Ustawienia Jira</value></data>
+  <data name="Jira_BaseUrl" xml:space="preserve"><value>Adres bazowy Jira:</value></data>
+  <data name="Jira_Username" xml:space="preserve"><value>Nazwa użytkownika:</value></data>
+  <data name="Jira_Token" xml:space="preserve"><value>Token API:</value></data>
+  <data name="Jira_GetToken" xml:space="preserve"><value>Pobierz token z Atlassian (otwiera przeglądarkę)</value></data>
+  <data name="AppSettings_Header" xml:space="preserve"><value>Ustawienia aplikacji</value></data>
+  <data name="App_AlwaysOnTop" xml:space="preserve"><value>Zawsze na wierzchu</value></data>
+  <data name="App_MinimizeToTray" xml:space="preserve"><value>Minimalizuj do traya</value></data>
+  <data name="App_AllowMultiple" xml:space="preserve"><value>Zezwalaj na wiele timerów</value></data>
+  <data name="App_IncludeProject" xml:space="preserve"><value>Dołącz nazwę projektu do podsumowania</value></data>
+  <data name="App_EnableLogging" xml:space="preserve"><value>Włącz logowanie</value></data>
+  <data name="App_OpenLogFolder" xml:space="preserve"><value>Otwórz folder logów</value></data>
+  <data name="Timers_Header" xml:space="preserve"><value>Timery i Worklog</value></data>
+  <data name="SaveTimerOnExit" xml:space="preserve"><value>Zapis timera przy wyjściu:</value></data>
+  <data name="PauseOnLock" xml:space="preserve"><value>Pauza przy zablokowaniu:</value></data>
+  <data name="PostComment" xml:space="preserve"><value>Publikuj komentarz:</value></data>
+  <data name="StartTransitions" xml:space="preserve"><value>Przejścia startowe:</value></data>
+  <data name="CheckForUpdates" xml:space="preserve"><value>Automatycznie sprawdzaj aktualizacje</value></data>
+  <data name="Btn_OK" xml:space="preserve"><value>OK</value></data>
+  <data name="Btn_Cancel" xml:space="preserve"><value>Anuluj</value></data>
+  
+
+  <data name="Worklog_Title" xml:space="preserve"><value>Wyślij worklog</value></data>
+  <data name="Worklog_AddComment" xml:space="preserve"><value>Dodaj komentarz (opcjonalnie)</value></data>
+  <data name="Worklog_TimeSpent" xml:space="preserve"><value>Czas pracy:</value></data>
+  <data name="Worklog_RemainingHeader" xml:space="preserve"><value>Pozostała estymata</value></data>
+  <data name="Worklog_AdjustAuto" xml:space="preserve"><value>Dostosuj automatycznie</value></data>
+  <data name="Worklog_LeaveAsIs" xml:space="preserve"><value>Pozostaw bez zmian</value></data>
+  <data name="Worklog_SetTo" xml:space="preserve"><value>Ustaw na</value></data>
+  <data name="Worklog_ReduceBy" xml:space="preserve"><value>Zmniejsz o</value></data>
+  <data name="Worklog_StartDate" xml:space="preserve"><value>Data rozpoczęcia:</value></data>
+  <data name="Worklog_StartTime" xml:space="preserve"><value>Godzina rozpoczęcia:</value></data>
+  <data name="Worklog_SaveForLater" xml:space="preserve"><value>Zapisz na później</value></data>
+  <data name="Worklog_Submit" xml:space="preserve"><value>Wyślij</value></data>
+  <data name="Worklog_Cancel" xml:space="preserve"><value>Anuluj</value></data>
+
+  <!-- Okno pomocy -->
+  <data name="Help_Title" xml:space="preserve"><value>Pomoc JiraStopwatch</value></data>
+  <data name="Help_Content" xml:space="preserve"><value>1. Skonfiguruj ustawienia Jira w Ustawieniach
+2. Wprowadź klucz zadania i kliknij Start, aby rozpocząć śledzenie
+3. Użyj Pauza/Stop, aby kontrolować timer
+4. Dodaj zadania, aby śledzić wiele elementów
+5. Użyj filtrów, aby załadować zadania z Jira
+6. Edytuj komentarze i usuń zadania
+7. Wyślij wpisy czasu do Jira
+
+Aby uzyskać więcej pomocy, odwiedź dokumentację.</value></data>
+
+  <!-- Okno informacji -->
+  <data name="About_Title" xml:space="preserve"><value>O Jira StopWatch</value></data>
+  <data name="About_ProductName" xml:space="preserve"><value>Jira StopWatch</value></data>
+  <data name="About_Copyright" xml:space="preserve"><value>Copyright 2016 Carsten Gehling</value></data>
+  <data name="About_License" xml:space="preserve"><value>Licencjonowane na podstawie Apache License, Version 2.0.</value></data>
+  <data name="About_ReadLicense" xml:space="preserve"><value>Przeczytaj licencję</value></data>
+  <data name="About_VisitHomepage" xml:space="preserve"><value>Odwiedź stronę produktu</value></data>
+  <data name="About_Close" xml:space="preserve"><value>Zamknij</value></data>
+
+  <!-- Okno komunikatu -->
+  <data name="MsgBox_OK" xml:space="preserve"><value>OK</value></data>
+
+  <!-- Okno edycji czasu -->
+  <data name="EditTime_Title" xml:space="preserve"><value>Edytuj timer</value></data>
+  <data name="EditTime_Header" xml:space="preserve"><value>Edytuj timer</value></data>
+  <data name="EditTime_Help" xml:space="preserve"><value>Obsługiwane formaty: 2h 15m oraz 2.25h</value></data>
+
+  <!-- IssueControl -->
+  <data name="Btn_Remove" xml:space="preserve"><value>X</value></data>
+
+  <!-- Ustawienia języka -->
+  <data name="Language" xml:space="preserve"><value>Język:</value></data>
+  <data name="Language_Default" xml:space="preserve"><value>Domyślny systemu</value></data>
+  <data name="Language_English" xml:space="preserve"><value>English</value></data>
+  <data name="Language_Polish" xml:space="preserve"><value>Polski</value></data>
+
+  <!-- Komunikaty -->
+  <data name="Msg_LanguageRestart" xml:space="preserve"><value>Zmiana języka zostanie zastosowana po ponownym uruchomieniu aplikacji.</value></data>
+  <data name="Msg_RestartFailed" xml:space="preserve"><value>Nie udało się ponownie uruchomić aplikacji. Uruchom ponownie ręcznie.</value></data>
+  <data name="Msg_NoTransitions" xml:space="preserve"><value>Brak dostępnych przejść dla tego zgłoszenia.</value></data>
+  <data name="Msg_NoDoneTransition" xml:space="preserve"><value>Nie znaleziono przejścia 'Zakończone'. Dostępne przejścia: {0}</value></data>
+  <data name="Msg_Title_Success" xml:space="preserve"><value>Sukces</value></data>
+  <data name="Msg_TransitionSuccess" xml:space="preserve"><value>Zgłoszenie {0} zostało pomyślnie przejściowane do '{1}'.</value></data>
+  <data name="Msg_TransitionFailed" xml:space="preserve"><value>Nie udało się przejściować zgłoszenia. Spróbuj ponownie.</value></data>
+  <data name="Btn_RestartNow" xml:space="preserve"><value>Uruchom ponownie</value></data>
+</root>

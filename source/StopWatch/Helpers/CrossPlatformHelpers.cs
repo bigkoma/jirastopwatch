@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 **************************************************************************/
 using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace StopWatch
 {
@@ -31,6 +33,52 @@ namespace StopWatch
             }
 
             return false;
+        }
+
+        public static void OpenUrl(string url)
+        {
+            try
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    Process.Start(new ProcessStartInfo("cmd", $"/c start \"\" \"{url}\"") { CreateNoWindow = true });
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    Process.Start("open", url);
+                }
+                else
+                {
+                    Process.Start("xdg-open", url);
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        public static void OpenFolder(string path)
+        {
+            try
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    Process.Start("explorer", path);
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    Process.Start("open", path);
+                }
+                else
+                {
+                    Process.Start("xdg-open", path);
+                }
+            }
+            catch
+            {
+                // ignore
+            }
         }
     }
 }

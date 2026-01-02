@@ -21,6 +21,6 @@ namespace StopWatch
     {
         string BaseUrl { get; set; }
 
-        IRestClient Create(bool invalidateCookies = false);
+        RestClient Create(bool invalidateCookies = false);
     }
 }

@@ -31,15 +31,15 @@ namespace StopWatch
             ErrorMessage = "";
         }
 
-        public T DoAuthenticatedRequest<T>(IRestRequest request)
+        public T DoAuthenticatedRequest<T>(RestRequest request)
             where T : new()
         {
             AddAuthHeader(request);
 
-            IRestClient client = restClientFactory.Create();
+            RestClient client = restClientFactory.Create();
 
             _logger.Log(string.Format("Request: {0}", client.BuildUri(request)));
-            IRestResponse<T> response = client.Execute<T>(request);
+            RestResponse<T> response = client.Execute<T>(request);
             _logger.Log(string.Format("Response: {0} - {1}", response.StatusCode, StringHelpers.Truncate(response.Content, 100)));
 
             // If login session has expired, try to login, and then re-execute the original request
@@ -58,13 +58,39 @@ namespace StopWatch
             return response.Data;
         }
 
+        public void DoAuthenticatedRequestForTransition(RestRequest request)
+        {
+            AddAuthHeader(request);
+
+            RestClient client = restClientFactory.Create();
+
+            _logger.Log(string.Format("Request: {0}", client.BuildUri(request)));
+            RestResponse response = client.Execute(request);
+            _logger.Log(string.Format("Response: {0} - {1}", response.StatusCode, StringHelpers.Truncate(response.Content, 100)));
+
+            // If login session has expired, try to login, and then re-execute the original request
+            if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.BadRequest)
+            {
+                throw new RequestDeniedException();
+            }
+
+            // For transitions, accept OK, Created, and NoContent as successful
+            if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.Created && response.StatusCode != HttpStatusCode.NoContent)
+            {
+                ErrorMessage = response.ErrorMessage;
+                throw new RequestDeniedException();
+            }
+
+            ErrorMessage = "";
+        }
+
         public void SetAuthentication(string username, string apiToken)
         {
             _username = username;
             _apiToken = apiToken;
         }
 
-        private void AddAuthHeader(IRestRequest request)
+        private void AddAuthHeader(RestRequest request)
         {
             if (string.IsNullOrEmpty(_username) || string.IsNullOrEmpty(_apiToken))
             {

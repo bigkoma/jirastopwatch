@@ -1,0 +1,25 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="StopWatch.IssueControl">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="120"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="70"/>
+            <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="70"/>
+            <ColumnDefinition Width="70"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBox x:Name="tbIssueKey" Grid.Column="0" Margin="0,0,5,0" FontSize="14"/>
+        <TextBlock x:Name="lblSummary" Grid.Column="1" Margin="0,0,5,0" TextTrimming="CharacterEllipsis" FontSize="14" Cursor="Hand" PointerPressed="LblSummary_PointerPressed"/>
+        <TextBox x:Name="tbComment" Grid.Column="2" Margin="0,0,5,0" Watermark="Comment" FontSize="14"/>
+        <TextBlock x:Name="lblTime" Grid.Column="3" Text="00:00:00" HorizontalAlignment="Center" FontWeight="Bold" FontSize="14"/>
+        <Button x:Name="btnStartStop" Grid.Column="4" Content="Start" Margin="0,0,2,0" Click="BtnStartStop_Click"/>
+        <Button x:Name="btnRemove" Grid.Column="5" Content="X" Margin="0,0,2,0"/>
+        <Button x:Name="btnLogWork" Grid.Column="6" Content="Log" Margin="0,0,2,0" Click="BtnLogWork_Click"/>
+        <Button x:Name="btnTransition" Grid.Column="7" Content="Done" Click="BtnTransition_Click"/>
+    </Grid>
+</UserControl>

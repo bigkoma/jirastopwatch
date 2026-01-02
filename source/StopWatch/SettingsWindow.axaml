@@ -1,0 +1,107 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="750"
+        x:Class="StopWatch.SettingsWindow"
+        Title="Settings"
+        Width="700"
+        Height="750"
+        WindowStartupLocation="CenterOwner"
+        CanResize="true">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Jira Settings -->
+            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" x:Name="txtJiraSettingsHeader" Text="Jira Settings" FontWeight="Bold" Margin="0,0,0,10"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" x:Name="txtJiraBaseUrl" Text="Jira base URL:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <TextBox Grid.Row="1" Grid.Column="1" x:Name="tbJiraBaseUrl" Margin="0,0,0,5"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" x:Name="txtUsername" Text="Username:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <TextBox Grid.Row="2" Grid.Column="1" x:Name="tbUsername" Margin="0,0,0,5"/>
+            <TextBlock Grid.Row="3" Grid.Column="0" x:Name="txtApiToken" Text="API Token:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <TextBox Grid.Row="3" Grid.Column="1" x:Name="tbApiToken" Margin="0,0,0,5" PasswordChar="*"/>
+            <TextBlock Grid.Row="4" Grid.Column="0"/>
+            <TextBlock Grid.Row="4" Grid.Column="1" x:Name="txtGetToken" Text="Get a token from Atlassian (opens browser)" Foreground="RoyalBlue" Cursor="Hand" Tapped="OpenApiTokens_Tapped"/>
+
+            <!-- App Options -->
+            <TextBlock Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" x:Name="txtAppSettingsHeader" Text="Application Settings" FontWeight="Bold" Margin="0,10,0,10"/>
+            <CheckBox Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" x:Name="cbAlwaysOnTop" Content="Always keep window on top" Margin="0,0,0,5"/>
+            <CheckBox Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" x:Name="cbMinimizeToTray" Content="Minimize to tray" Margin="0,0,0,5" IsChecked="True" IsEnabled="False"/>
+            <CheckBox Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" x:Name="cbAllowMultipleTimers" Content="Allow multiple timers" Margin="0,0,0,5"/>
+            <CheckBox Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2" x:Name="cbIncludeProjectName" Content="Include project name in summary" Margin="0,0,0,5"/>
+            <CheckBox Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="2" x:Name="cbLoggingEnabled" Content="Enable logging" Margin="0,0,0,5"/>
+            <TextBlock Grid.Row="11" Grid.Column="0"/>
+            <TextBlock Grid.Row="11" Grid.Column="1" x:Name="txtOpenLogFolder" Text="Open log folder" Foreground="RoyalBlue" Cursor="Hand" Tapped="OpenLogFolder_Tapped"/>
+
+            <!-- Language Settings -->
+            <TextBlock Grid.Row="12" Grid.Column="0" x:Name="txtLanguage" Text="Language:" VerticalAlignment="Center" Margin="0,10,5,0"/>
+            <ComboBox Grid.Row="12" Grid.Column="1" x:Name="cbLanguage" Margin="0,10,0,0"/>
+
+            <!-- Timers and Worklog -->
+            <TextBlock Grid.Row="13" Grid.Column="0" Grid.ColumnSpan="2" x:Name="txtTimersHeader" Text="Timers &amp; Worklog" FontWeight="Bold" Margin="0,10,0,10"/>
+            <TextBlock Grid.Row="14" Grid.Column="0" x:Name="txtSaveTimerOnExit" Text="Save timer on exit:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <ComboBox Grid.Row="14" Grid.Column="1" x:Name="cbSaveTimerState"/>
+
+            <TextBlock Grid.Row="15" Grid.Column="0" x:Name="txtPauseOnLock" Text="Pause on lock:" VerticalAlignment="Center" Margin="0,10,5,0"/>
+            <ComboBox Grid.Row="15" Grid.Column="1" x:Name="cbPauseOnSessionLock"/>
+
+            <TextBlock Grid.Row="16" Grid.Column="0" x:Name="txtPostComment" Text="Post comment:" VerticalAlignment="Center" Margin="0,10,5,0"/>
+            <ComboBox Grid.Row="16" Grid.Column="1" x:Name="cbPostWorklogComment"/>
+
+            <TextBlock Grid.Row="17" Grid.Column="0" x:Name="txtStartTransitions" Text="Start transitions:" VerticalAlignment="Center" Margin="0,10,5,0"/>
+            <TextBox Grid.Row="17" Grid.Column="1" x:Name="tbStartTransitions"/>
+
+            <CheckBox Grid.Row="18" Grid.Column="0" Grid.ColumnSpan="2" x:Name="cbCheckForUpdate" Content="Check for updates automatically" Margin="0,10,0,0"/>
+
+            <!-- Bottom Buttons -->
+            <StackPanel Grid.Row="19" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+                <Button x:Name="btnAbout" Content="About" Width="90" Margin="0,0,10,0" Click="BtnAbout_Click"/>
+                <Button x:Name="btnOK" Content="OK" Width="90" Margin="0,0,10,0" Click="BtnOK_Click"/>
+                <Button x:Name="btnCancel" Content="Cancel" Width="90" Click="BtnCancel_Click"/>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Window>

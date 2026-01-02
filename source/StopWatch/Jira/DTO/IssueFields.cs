@@ -18,6 +18,7 @@ namespace StopWatch
     internal class IssueFields
     {
         public string Summary { get; set; }
+        public string Description { get; set; }
         public TimetrackingFields Timetracking { get; set; }
         public ProjectFields Project { get; set; }
     }

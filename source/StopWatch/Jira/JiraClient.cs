@@ -98,6 +98,19 @@ namespace StopWatch
             return addProjectName ? issue.Project.Name + ": " + issue.Summary : issue.Summary;
         }
 
+        public Issue GetIssueDetails(string key)
+        {
+            var request = jiraApiRequestFactory.CreateGetIssueSummaryRequest(key);
+            try
+            {
+                return jiraApiRequester.DoAuthenticatedRequest<Issue>(request);
+            }
+            catch (RequestDeniedException)
+            {
+                return null;
+            }
+        }
+
         public TimetrackingFields GetIssueTimetracking(string key)
         {
             var request = jiraApiRequestFactory.CreateGetIssueTimetrackingRequest(key);
@@ -174,7 +187,7 @@ namespace StopWatch
             var request = jiraApiRequestFactory.CreateDoTransition(key, transitionId);
             try
             {
-                jiraApiRequester.DoAuthenticatedRequest<object>(request);
+                jiraApiRequester.DoAuthenticatedRequestForTransition(request);
                 return true;
             }
             catch (RequestDeniedException)

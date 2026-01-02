@@ -1,0 +1,61 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="StopWatch.WorklogDialogWindow"
+        Title="Post Worklog"
+        Width="360"
+        Height="480"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" x:Name="lblIssue" FontWeight="Bold"/>
+
+        <TextBlock Grid.Row="1" x:Name="txtAddComment" Text="Add a comment (optional)"/>
+        <TextBox Grid.Row="2" x:Name="tbComment" AcceptsReturn="True" Height="120" TextWrapping="Wrap"/>
+
+        <!-- Time spent -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="6" Margin="0,8,0,0">
+            <TextBlock x:Name="txtTimeSpent" Text="Time spent:" VerticalAlignment="Center"/>
+            <TextBox x:Name="tbTimeSpent" Width="120" ToolTip.Tip="Jira format e.g. 2m, 1h 30m"/>
+        </StackPanel>
+
+        <Border Grid.Row="4" Margin="0,10,0,0" BorderBrush="Gray" BorderThickness="1" Padding="8">
+            <StackPanel Spacing="6">
+                <TextBlock x:Name="txtRemainingHeader" Text="Remaining Estimate" FontWeight="Bold"/>
+                <RadioButton x:Name="rdAuto" Content="Adjust Automatically" IsChecked="True" Checked="Estimate_Checked" GroupName="EstimateGroup"/>
+                <RadioButton x:Name="rdLeave" Content="Leave as is" Checked="Estimate_Checked" GroupName="EstimateGroup"/>
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <RadioButton x:Name="rdSetTo" Content="Set to" Checked="Estimate_Checked" GroupName="EstimateGroup"/>
+                    <TextBox x:Name="tbSetTo" Width="100" IsEnabled="False" TextChanged="TbEstimate_TextChanged"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <RadioButton x:Name="rdReduceBy" Content="Reduce by" Checked="Estimate_Checked" GroupName="EstimateGroup"/>
+                    <TextBox x:Name="tbReduceBy" Width="100" IsEnabled="False" TextChanged="TbEstimate_TextChanged"/>
+                </StackPanel>
+                <TextBlock x:Name="lblRemaining" Foreground="Gray"/>
+            </StackPanel>
+        </Border>
+
+        <StackPanel Grid.Row="5" Orientation="Horizontal" Spacing="6" Margin="0,10,0,0">
+            <TextBlock x:Name="txtStartDate" Text="Start date:" VerticalAlignment="Center"/>
+            <DatePicker x:Name="startDatePicker" FontSize="14"/>
+            <TextBlock x:Name="txtStartTime" Text="Start time:" VerticalAlignment="Center"/>
+            <TimePicker x:Name="startTimePicker" FontSize="14"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,12">
+            <Button x:Name="btnSave" Content="Save for later" Width="110" Margin="0,0,10,0" Click="BtnSave_OnClick"/>
+            <Button x:Name="btnOk" Content="Submit" Width="90" Margin="0,0,10,0" Click="BtnOk_OnClick"/>
+            <Button x:Name="btnCancel" Content="Cancel" Width="90" Click="BtnCancel_OnClick"/>
+        </StackPanel>
+    </Grid>
+</Window>

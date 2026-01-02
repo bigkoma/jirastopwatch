@@ -21,8 +21,10 @@ namespace StopWatch
     {
         string ErrorMessage { get; }
 
-        T DoAuthenticatedRequest<T>(IRestRequest request)
+        T DoAuthenticatedRequest<T>(RestRequest request)
             where T : new();
+
+        void DoAuthenticatedRequestForTransition(RestRequest request);
 
         void SetAuthentication(string username, string apiToken);
     }
