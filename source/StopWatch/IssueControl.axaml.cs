@@ -121,6 +121,19 @@ public partial class IssueControl : UserControl
         try { tbIssueKey.Focus(); } catch { }
     }
 
+    public void SetDoneVisual(bool done)
+    {
+        try
+        {
+            this.Opacity = done ? 0.5 : 1.0;
+            btnStartStop.IsEnabled = !done;
+            btnLogWork.IsEnabled = !done;
+            btnTransition.IsEnabled = !done;
+            tbComment.IsEnabled = !done;
+        }
+        catch { }
+    }
+
     private static string FormatMinutes(string hhmmss)
     {
         try

@@ -658,6 +658,9 @@ public partial class MainWindow : Window
             {
                 await ShowMessage(Localization.Localizer.T("Msg_Title_Success"), 
                     string.Format(Localization.Localizer.T("Msg_TransitionSuccess"), key, doneTransition.Name));
+                // Gray out the row in UI
+                var ctrl = issuesPanel.Children.OfType<Border>().Select(b => b.Child as IssueControl).FirstOrDefault(ic => ic?.Issue.Key == key);
+                ctrl?.SetDoneVisual(true);
             }
             else
             {
@@ -1063,6 +1066,17 @@ public partial class MainWindow : Window
                     var summary = Settings.Instance.IncludeProjectName ? details.Fields.Project.Name + ": " + details.Fields.Summary : details.Fields.Summary;
                     issueControl.UpdateSummary(summary ?? "");
                     issueControl.SetIssueKeyReadOnly(true);
+                    // Gray out if status is Done
+                    try
+                    {
+                        var st = details.Fields.Status?.Name?.ToLowerInvariant();
+                        if (!string.IsNullOrEmpty(st))
+                        {
+                            var done = st.Contains("done") || st.Contains("closed") || st.Contains("resolved") || st.Contains("completed") || st.Contains("finished") || st.Contains("gotow") || st.Contains("zamk") || st.Contains("zako") || st.Contains("uko");
+                            issueControl.SetDoneVisual(done);
+                        }
+                    }
+                    catch { }
                     var tooltip = details.Fields.Summary;
                     if (!string.IsNullOrEmpty(details.Fields.Description))
                     {
