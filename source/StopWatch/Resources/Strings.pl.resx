@@ -12,7 +12,7 @@
   <data name="Msg_Success" xml:space="preserve"><value>Sukces</value></data>
   <data name="Worklog_SubmitSuccess" xml:space="preserve"><value>Pomyślnie wysłano wpisy dla {0} zadań.</value></data>
   <data name="Worklog_SubmitError" xml:space="preserve"><value>Nie udało się wysłać wpisów: {0}</value></data>
-  <data name="App_Title" xml:space="preserve"><value>JiraStopwatch</value></data>
+  <data name="App_Title" xml:space="preserve"><value>Jira StopWatch by Komasa</value></data>
   <data name="Menu_File" xml:space="preserve"><value>Plik</value></data>
   <data name="Menu_Settings" xml:space="preserve"><value>Ustawienia</value></data>
   <data name="Menu_Exit" xml:space="preserve"><value>Zakończ</value></data>
@@ -97,7 +97,7 @@
   <data name="Worklog_Cancel" xml:space="preserve"><value>Anuluj</value></data>
 
   <!-- Okno pomocy -->
-  <data name="Help_Title" xml:space="preserve"><value>Pomoc JiraStopwatch</value></data>
+  <data name="Help_Title" xml:space="preserve"><value>Pomoc Jira StopWatch by Komasa</value></data>
   <data name="Help_Content" xml:space="preserve"><value>1. Skonfiguruj ustawienia Jira w Ustawieniach
 2. Wprowadź klucz zadania i kliknij Start, aby rozpocząć śledzenie
 3. Użyj Pauza/Stop, aby kontrolować timer
@@ -109,8 +109,9 @@
 Aby uzyskać więcej pomocy, odwiedź dokumentację.</value></data>
 
   <!-- Okno informacji -->
-  <data name="About_Title" xml:space="preserve"><value>O Jira StopWatch</value></data>
-  <data name="About_ProductName" xml:space="preserve"><value>Jira StopWatch</value></data>
+  <data name="About_Title" xml:space="preserve"><value>O Jira StopWatch by Komasa</value></data>
+  <data name="About_ProductName" xml:space="preserve"><value>Jira StopWatch by Komasa</value></data>
+  <data name="About_Author" xml:space="preserve"><value>Autor: Michał Komasa</value></data>
   <data name="About_Copyright" xml:space="preserve"><value>Copyright 2016 Carsten Gehling</value></data>
   <data name="About_License" xml:space="preserve"><value>Licencjonowane na podstawie Apache License, Version 2.0.</value></data>
   <data name="About_ReadLicense" xml:space="preserve"><value>Przeczytaj licencję</value></data>

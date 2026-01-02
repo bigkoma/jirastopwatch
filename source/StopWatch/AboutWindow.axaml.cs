@@ -11,6 +11,13 @@ public partial class AboutWindow : Window
         InitializeComponent();
         ApplyLocalization();
         lblNameVersion.Text = $"{GetProductName()} v. {GetProductVersion()}";
+        try
+        {
+            var authorBlock = this.FindControl<TextBlock>("AuthorBlock");
+            if (authorBlock != null)
+                authorBlock.Text = Localization.Localizer.T("About_Author");
+        }
+        catch { }
     }
 
     private void ApplyLocalization()
@@ -19,6 +26,8 @@ public partial class AboutWindow : Window
         {
             Title = Localization.Localizer.T("About_Title");
             lblNameVersion.Text = $"{Localization.Localizer.T("About_ProductName")} v. {GetProductVersion()}";
+            var authorBlock = this.FindControl<TextBlock>("AuthorBlock");
+            if (authorBlock != null) authorBlock.Text = Localization.Localizer.T("About_Author");
             
             // Find and update the copyright/license text block
             var copyrightBlock = this.FindControl<TextBlock>("CopyrightBlock");
@@ -57,7 +66,7 @@ public partial class AboutWindow : Window
 
     private static string GetProductName()
     {
-        return "Jira StopWatch";
+        return "Jira StopWatch by Komasa";
     }
 
     private static string GetProductVersion()

@@ -208,7 +208,7 @@ public partial class MainWindow : Window
             _trayIcon = new TrayIcon
             {
                 Icon = new WindowIcon(s),
-                ToolTipText = "JiraStopwatch"
+                ToolTipText = Localization.Localizer.T("App_Title")
             };
             var menu = new NativeMenu();
             var showItem = new NativeMenuItem("Show");

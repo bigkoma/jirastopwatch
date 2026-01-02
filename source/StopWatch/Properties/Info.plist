@@ -3,15 +3,15 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleName</key>
-    <string>JiraStopwatch</string>
+    <string>Jira StopWatch by Komasa</string>
     <key>CFBundleDisplayName</key>
-    <string>JiraStopwatch</string>
+    <string>Jira StopWatch by Komasa</string>
     <key>CFBundleIdentifier</key>
     <string>com.example.jirastopwatch</string>
     <key>CFBundleVersion</key>
-    <string>1.0</string>
+    <string>3.0.0</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.0</string>
+    <string>3.0.0</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>LSMinimumSystemVersion</key>

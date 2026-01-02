@@ -13,7 +13,7 @@
   <data name="Worklog_SubmitSuccess" xml:space="preserve"><value>Successfully submitted worklogs for {0} issues.</value></data>
   <data name="Worklog_SubmitError" xml:space="preserve"><value>Failed to submit worklogs: {0}</value></data>
   <!-- MainWindow -->
-  <data name="App_Title" xml:space="preserve"><value>JiraStopwatch</value></data>
+  <data name="App_Title" xml:space="preserve"><value>Jira StopWatch by Komasa</value></data>
   <data name="Menu_File" xml:space="preserve"><value>File</value></data>
   <data name="Menu_Settings" xml:space="preserve"><value>Settings</value></data>
   <data name="Menu_Exit" xml:space="preserve"><value>Exit</value></data>
@@ -101,7 +101,7 @@
   <data name="Worklog_Cancel" xml:space="preserve"><value>Cancel</value></data>
 
   <!-- Help Dialog -->
-  <data name="Help_Title" xml:space="preserve"><value>JiraStopwatch Help</value></data>
+  <data name="Help_Title" xml:space="preserve"><value>Jira StopWatch by Komasa Help</value></data>
   <data name="Help_Content" xml:space="preserve"><value>1. Configure Jira settings in Settings
 2. Enter issue key and click Start to begin tracking
 3. Use Pause/Stop to control the timer
@@ -113,8 +113,9 @@
 For more help, visit the documentation.</value></data>
 
   <!-- About Window -->
-  <data name="About_Title" xml:space="preserve"><value>About Jira StopWatch</value></data>
-  <data name="About_ProductName" xml:space="preserve"><value>Jira StopWatch</value></data>
+  <data name="About_Title" xml:space="preserve"><value>About Jira StopWatch by Komasa</value></data>
+  <data name="About_ProductName" xml:space="preserve"><value>Jira StopWatch by Komasa</value></data>
+  <data name="About_Author" xml:space="preserve"><value>Author: Michał Komasa</value></data>
   <data name="About_Copyright" xml:space="preserve"><value>Copyright 2016 Carsten Gehling</value></data>
   <data name="About_License" xml:space="preserve"><value>Licensed under the Apache License, Version 2.0.</value></data>
   <data name="About_ReadLicense" xml:space="preserve"><value>Read License</value></data>
