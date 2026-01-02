@@ -15,8 +15,8 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Menu -->
-        <Menu Grid.Row="0">
+        <!-- Menu (hidden) -->
+        <Menu Grid.Row="0" IsVisible="False">
             <MenuItem x:Name="menuFileRoot" Header="_File">
                 <MenuItem Header="_Settings" x:Name="menuSettings" Click="MenuSettings_Click"/>
                 <MenuItem Header="_Exit" x:Name="menuExit" Click="MenuExit_Click"/>
@@ -34,32 +34,27 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <!-- Top panel -->
-            <Border Grid.Row="0" BorderBrush="Gray" BorderThickness="0,0,0,1" Margin="0,0,0,5">
-                <Grid Margin="10">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-
-                    <!-- Filter controls -->
-                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-                        <TextBlock x:Name="txtActiveFilterLabel" Text="Active Filter:" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                        <ComboBox x:Name="cbFilters" Width="200" Margin="0,0,10,0"/>
-                        <TextBlock x:Name="lblActiveFilter" Text="No filter selected" VerticalAlignment="Center"/>
-                    </StackPanel>
-
-                    <!-- Issue controls -->
-                    <StackPanel Grid.Row="1" Orientation="Horizontal">
-                        <TextBlock x:Name="txtIssueLabel" Text="Issue:" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                        <TextBox x:Name="tbIssueKey" Width="180" Margin="0,0,6,0"/>
-                        <Button x:Name="btnStart" Content="Start" Margin="0,0,5,0"/>
-                        <Button x:Name="btnPause" Content="Pause" Margin="0,0,5,0"/>
-                        <Button x:Name="btnStop" Content="Stop" Margin="0,0,5,0"/>
-                        <TextBlock x:Name="tbTimer" Text="00:00:00" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Margin="20,0,0,0"/>
-                        <TextBlock x:Name="lblTotalTime" Text="Total:" VerticalAlignment="Center" Margin="20,0,5,0"/>
-                        <TextBox x:Name="tbTotalTime" Text="00:00:00" Width="100" Margin="0,0,10,0" IsReadOnly="True"/>
-                    </StackPanel>
+            <!-- Top panel (blue) -->
+            <Border Grid.Row="0" Background="#4A7FAE" BorderBrush="#3B6E96" BorderThickness="0,0,0,1" Padding="10">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="txtActiveFilterLabel" Text="Filter" Foreground="White" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <ComboBox x:Name="cbFilters" Grid.Column="1" Width="200"/>
+                    <Grid Grid.Column="2"/>
+                    <!-- Add Issue icon -->
+                    <Button x:Name="btnAddIssue" Grid.Column="3" Width="28" Height="28" Margin="8,0,8,0" ToolTip.Tip="Add issue">
+                        <Image Source="avares://StopWatch/icons/addissue22.png" Width="20" Height="20"/>
+                    </Button>
+                    <!-- Help icon -->
+                    <Button x:Name="btnHelp" Grid.Column="4" Width="28" Height="28" ToolTip.Tip="Help">
+                        <Image Source="avares://StopWatch/icons/help22.png" Width="20" Height="20"/>
+                    </Button>
                 </Grid>
             </Border>
 
@@ -70,25 +65,37 @@
                 </StackPanel>
             </ScrollViewer>
 
-            <!-- Bottom panel -->
-            <Border Grid.Row="2" BorderBrush="Gray" BorderThickness="0,1,0,0" Margin="0,5,0,0">
-                <Grid Margin="10">
+            <!-- Hidden legacy controls required by code-behind -->
+            <StackPanel Grid.Row="1" IsVisible="False">
+                <TextBlock x:Name="lblActiveFilter"/>
+                <TextBlock x:Name="tbTimer"/>
+                <TextBlock x:Name="lblTotalTime"/>
+                <TextBox x:Name="tbIssueKey"/>
+                <TextBlock x:Name="txtIssueLabel"/>
+                <Button x:Name="btnStart"/>
+                <Button x:Name="btnPause"/>
+                <Button x:Name="btnStop"/>
+                <!-- tbTotalTime is visible in bottom bar; defined there -->
+            </StackPanel>
+
+            <!-- Bottom panel (status white bar) -->
+            <Border Grid.Row="2" Background="#E6EEF6" BorderBrush="#C7D2E3" BorderThickness="0,1,0,0" Padding="6" Margin="0,5,0,0">
+                <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-
-                    <StackPanel Grid.Column="0" Orientation="Horizontal">
-                        <Button x:Name="btnAddIssue" Content="Add Issue" Margin="0,0,10,0" ToolTip.Tip="Add a new issue by key"/>
-                        <Button x:Name="btnSubmitWorklog" Content="Submit Worklog" Margin="0,0,10,0" ToolTip.Tip="Submit all worklogs"/>
-                        <TextBlock x:Name="lblConnectionStatus" Text="Not connected" VerticalAlignment="Center"/>
-                    </StackPanel>
-
-                    <StackPanel Grid.Column="1" Orientation="Horizontal">
-                        <Button x:Name="btnSettings" Content="Settings" Margin="0,0,5,0"/>
-                        <Button x:Name="btnAbout" Content="About" Margin="0,0,5,0"/>
-                        <Button x:Name="btnHelp" Content="Help" Margin="0,0,5,0"/>
-                    </StackPanel>
+                    <TextBlock x:Name="lblConnectionStatus" Grid.Column="0" Text="Not connected" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="1" Text="  Total  " VerticalAlignment="Center" Margin="10,0"/>
+                    <TextBox Grid.Column="2" x:Name="tbTotalTime" Text="0m" Width="80" IsReadOnly="True"/>
+                    <Button x:Name="btnSettings" Grid.Column="3" Width="28" Height="28" Margin="12,0,0,0" ToolTip.Tip="Settings">
+                        <Image Source="avares://StopWatch/icons/settings22.png" Width="20" Height="20"/>
+                    </Button>
+                    <!-- Hidden buttons kept for handler wiring -->
+                    <Button x:Name="btnSubmitWorklog" IsVisible="False"/>
+                    <Button x:Name="btnAbout" IsVisible="False"/>
                 </Grid>
             </Border>
         </Grid>
