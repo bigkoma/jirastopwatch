@@ -129,7 +129,14 @@ public partial class IssueControl : UserControl
     {
         base.OnInitialized();
         // Button captions/icons to match compact layout
-        btnLogWork.Content = "W"; // Worklog text
+        // Log work (calendar icon without exclamation)
+        try
+        {
+            var logUri = new Uri("avares://StopWatch/icons/posttime26.png");
+            using var ls = AssetLoader.Open(logUri);
+            btnLogWork.Content = new Image { Source = new Bitmap(ls), Width = 18, Height = 18 };
+        }
+        catch { btnLogWork.Content = "W"; }
         // Delete icon
         try
         {
@@ -138,13 +145,7 @@ public partial class IssueControl : UserControl
             btnRemove.Content = new Image { Source = new Bitmap(ds), Width = 16, Height = 16 };
         }
         catch { btnRemove.Content = "X"; }
-        // Done/status icon
-        try
-        {
-            var doneUri = new Uri("avares://StopWatch/icons/posttimenote26.png");
-            using var s = AssetLoader.Open(doneUri);
-            btnTransition.Content = new Image { Source = new Bitmap(s), Width = 18, Height = 18 };
-        }
-        catch { btnTransition.Content = Localization.Localizer.Culture.TwoLetterISOLanguageName == "pl" ? "Za" : "Done"; }
+        // Done/status mark as check emoji
+        btnTransition.Content = "✅";
     }
 }
