@@ -33,7 +33,21 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/StopWatch.sln"
+                "${workspaceFolder}/source/StopWatch/StopWatch.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        }
+        ,
+        {
+            "label": "run",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "run",
+                "--project",
+                "${workspaceFolder}/source/StopWatch/StopWatch.csproj",
+                "-c",
+                "Debug"
             ],
             "problemMatcher": "$msCompile"
         }

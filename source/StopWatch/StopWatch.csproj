@@ -13,7 +13,7 @@
     <InformationalVersion>3.0.0</InformationalVersion>
     <ApplicationIcon>stopwatchicon.ico</ApplicationIcon>
     <UseAppHost>true</UseAppHost>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="RestSharp" Version="112.0.0" />

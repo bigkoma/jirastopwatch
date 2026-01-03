@@ -11,6 +11,7 @@ public partial class IssueControl : UserControl
     public IssueViewModel Issue { get; set; }
 
     public event EventHandler<string> IssueKeyChanged;
+    public event EventHandler<string> IssueKeyEntered;
     public event EventHandler CommentChanged;
     public event EventHandler StartStopClicked;
     public event EventHandler LogWorkClicked;
@@ -22,6 +23,7 @@ public partial class IssueControl : UserControl
         InitializeComponent();
         // Wire text change handlers
         tbIssueKey.TextChanged += TbIssueKey_TextChanged;
+        tbIssueKey.KeyDown += TbIssueKey_KeyDown;
         tbComment.TextChanged += TbComment_TextChanged;
     }
 
@@ -36,6 +38,7 @@ public partial class IssueControl : UserControl
         tbComment.Watermark = Localization.Localizer.T("Issue_Comment");
         SetStartStopIcon(issue.IsRunning);
         lblSummary.Text = ""; // Will be updated later
+        SetButtonsForFetched(false); // Enable only start/stop and remove for unfetched issues
     }
 
     public void UpdateSummary(string summary)
@@ -49,6 +52,14 @@ public partial class IssueControl : UserControl
         {
             Issue.Key = tbIssueKey.Text;
             IssueKeyChanged?.Invoke(this, tbIssueKey.Text);
+        }
+    }
+
+    private void TbIssueKey_KeyDown(object sender, Avalonia.Input.KeyEventArgs e)
+    {
+        if (e.Key == Avalonia.Input.Key.Enter)
+        {
+            IssueKeyEntered?.Invoke(this, tbIssueKey.Text);
         }
     }
 
@@ -114,6 +125,28 @@ public partial class IssueControl : UserControl
     public void SetIssueKeyReadOnly(bool readOnly)
     {
         try { tbIssueKey.IsReadOnly = readOnly; } catch { }
+    }
+
+    public void SetButtonsEnabled(bool enabled)
+    {
+        try
+        {
+            btnStartStop.IsEnabled = enabled;
+            btnLogWork.IsEnabled = enabled;
+            btnTransition.IsEnabled = enabled;
+        }
+        catch { }
+    }
+
+    public void SetButtonsForFetched(bool fetched)
+    {
+        try
+        {
+            btnStartStop.IsEnabled = true; // Always enabled
+            btnLogWork.IsEnabled = fetched;
+            btnTransition.IsEnabled = fetched;
+        }
+        catch { }
     }
 
     public void FocusIssueKey()

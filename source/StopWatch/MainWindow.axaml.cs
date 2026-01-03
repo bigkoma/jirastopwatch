@@ -43,6 +43,7 @@ public partial class MainWindow : Window
     private JiraClient jiraClient;
     private TrayIcon _trayIcon;
     private bool _trayWarningShown;
+    private bool _trayHandlingEnabled;
 
     public MainWindow()
     {
@@ -56,6 +57,11 @@ public partial class MainWindow : Window
         if (!double.IsNaN(Settings.Instance.WindowPositionX) && !double.IsNaN(Settings.Instance.WindowPositionY))
         {
             Position = new PixelPoint((int)Settings.Instance.WindowPositionX, (int)Settings.Instance.WindowPositionY);
+        }
+        else
+        {
+            // First run or no saved position: center on screen so it is visible
+            WindowStartupLocation = WindowStartupLocation.CenterScreen;
         }
         // Some platforms ignore Position until window is opened
         Opened += MainWindow_Opened;
@@ -100,6 +106,7 @@ public partial class MainWindow : Window
         // Hide to tray on minimize if enabled
         this.PropertyChanged += (s, e) =>
         {
+            if (!_trayHandlingEnabled) return;
             if (Settings.Instance.MinimizeToTray && e.Property == Window.WindowStateProperty && WindowState == WindowState.Minimized)
             {
                 if (EnsureTrayOrWarn())
@@ -185,6 +192,123 @@ public partial class MainWindow : Window
         {
             Position = new PixelPoint((int)Settings.Instance.WindowPositionX, (int)Settings.Instance.WindowPositionY);
         }
+
+        // Ensure window is inside a visible work area (handles unplugged monitors, DPI changes, etc.)
+        EnsureWindowVisible();
+
+        // Bring window to front explicitly on macOS (sometimes first activation is ignored)
+        try
+        {
+            WindowState = WindowState.Normal;
+            Topmost = true;
+            Activate();
+            Dispatcher.UIThread.Post(() =>
+            {
+                // restore Topmost according to settings after bringing forward
+                Topmost = Settings.Instance.AlwaysOnTop;
+                Activate();
+            }, DispatcherPriority.Background);
+        }
+        catch { }
+
+        // Enable tray minimize handling only after window is fully shown
+        _trayHandlingEnabled = true;
+
+        // Immediately try to establish Jira session and load issues in background
+        _ = StartBackgroundSyncAsync();
+    }
+
+    private async Task StartBackgroundSyncAsync()
+    {
+        try
+        {
+            if (!IsJiraEnabled)
+            {
+                UpdateConnectionStatus();
+                return;
+            }
+
+            // Prepare client and validate session without blocking UI
+            restClientFactory.BaseUrl = Settings.Instance.JiraBaseUrl;
+            await Task.Run(() =>
+            {
+                try
+                {
+                    jiraClient.Authenticate(Settings.Instance.Username, Settings.Instance.ApiToken);
+                    jiraClient.ValidateSession();
+                }
+                catch { }
+            });
+
+            // Update status
+            if (jiraClient.SessionValid)
+            {
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    lblConnectionStatus.Text = "Connected to Jira";
+                });
+
+                // Load issues for the currently selected filter (if any JQL present)
+                string jql = null;
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    if (cbFilters.SelectedIndex >= 0 && cbFilters.SelectedIndex < filters.Count)
+                        jql = filters[cbFilters.SelectedIndex].Jql;
+                });
+                if (!string.IsNullOrEmpty(jql))
+                {
+                    await Dispatcher.UIThread.InvokeAsync(() => LoadIssuesFromJira(jql));
+                }
+
+                // Refresh summaries for already listed/persisted issues
+                await Dispatcher.UIThread.InvokeAsync(RefreshAllIssueSummaries);
+            }
+            else
+            {
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    lblConnectionStatus.Text = Localization.Localizer.T("Status_NotConnected");
+                });
+            }
+        }
+        catch
+        {
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                lblConnectionStatus.Text = Localization.Localizer.T("Status_NotConnected");
+            });
+        }
+    }
+
+    private void EnsureWindowVisible()
+    {
+        try
+        {
+            // Calculate the window rectangle in pixels
+            var rect = new PixelRect(Position, new PixelSize((int)Math.Max(1, Width), (int)Math.Max(1, Height)));
+            var screens = Screens?.All?.ToList() ?? new List<Screen>();
+            if (screens.Count == 0)
+                return;
+
+            bool intersectsAny = screens.Any(s => s.WorkingArea.Intersects(rect));
+            if (!intersectsAny)
+            {
+                // Center on primary screen if we're off-screen
+                var primary = Screens.Primary ?? screens.First();
+                var wa = primary.WorkingArea;
+                int w = (int)Math.Max(1, Width);
+                int h = (int)Math.Max(1, Height);
+                int x = wa.X + Math.Max(0, (wa.Width - w) / 2);
+                int y = wa.Y + Math.Max(0, (wa.Height - h) / 2);
+                Position = new PixelPoint(x, y);
+
+                // Also clear obviously invalid saved coordinates
+                Settings.Instance.WindowPositionX = x;
+                Settings.Instance.WindowPositionY = y;
+                Settings.Instance.Save();
+            }
+        }
+        catch { }
     }
 
     private async Task OpenSettingsAsync()
@@ -201,9 +325,16 @@ public partial class MainWindow : Window
         InitializeTrayIcon();
         if (IsJiraEnabled)
         {
-            restClientFactory.BaseUrl = Settings.Instance.JiraBaseUrl;
-            jiraClient.Authenticate(Settings.Instance.Username, Settings.Instance.ApiToken);
-            jiraClient.ValidateSession();
+            _ = Task.Run(() =>
+            {
+                try
+                {
+                    restClientFactory.BaseUrl = Settings.Instance.JiraBaseUrl;
+                    jiraClient.Authenticate(Settings.Instance.Username, Settings.Instance.ApiToken);
+                    jiraClient.ValidateSession();
+                }
+                catch { }
+            });
         }
     }
 
@@ -282,13 +413,8 @@ public partial class MainWindow : Window
         jiraApiRequester = new JiraApiRequester(restClientFactory, jiraApiRequestFactory);
         jiraClient = new JiraClient(jiraApiRequestFactory, jiraApiRequester);
 
-        // Authenticate if credentials are available
-        if (IsJiraEnabled)
-        {
-            restClientFactory.BaseUrl = Settings.Instance.JiraBaseUrl;
-            jiraClient.Authenticate(Settings.Instance.Username, Settings.Instance.ApiToken);
-            jiraClient.ValidateSession();
-        }
+        // Do NOT perform any network calls here to avoid blocking the UI thread on startup.
+        // Network initialization will run in background when needed.
 
         // Localize tray menu entries
         try
@@ -315,35 +441,48 @@ public partial class MainWindow : Window
     {
         cbFilters.Items.Clear();
         filters.Clear();
-        try
-        {
-            if (IsJiraEnabled && jiraClient.ValidateSession())
-            {
-                var favs = jiraClient.GetFavoriteFilters();
-                if (favs != null && favs.Count > 0)
-                {
-                    foreach (var f in favs)
-                    {
-                        filters.Add(new FilterItem { Id = f.Id, Name = f.Name, Jql = f.Jql });
-                        cbFilters.Items.Add(f.Name);
-                    }
-                    cbFilters.SelectedIndex = Math.Min(Math.Max(0, Settings.Instance.CurrentFilter), filters.Count - 1);
-                    lblActiveFilter.Text = filters[cbFilters.SelectedIndex].Name;
-                    return;
-                }
-            }
-        }
-        catch { }
-
-        // Fallback defaults
+        
+        // Always populate quick fallback filters immediately so UI is ready
         filters.Add(new FilterItem { Id = 0, Name = Localization.Localizer.T("Filter_All"), Jql = "" });
         filters.Add(new FilterItem { Id = 1, Name = Localization.Localizer.T("Filter_Mine"), Jql = "assignee = currentUser()" });
         filters.Add(new FilterItem { Id = 2, Name = Localization.Localizer.T("Filter_Recent"), Jql = "updated > -7d" });
-
         foreach (var filter in filters)
             cbFilters.Items.Add(filter.Name);
-        cbFilters.SelectedIndex = 0;
-        lblActiveFilter.Text = filters[0].Name;
+        cbFilters.SelectedIndex = Math.Min(Math.Max(0, Settings.Instance.CurrentFilter), filters.Count - 1);
+        lblActiveFilter.Text = filters[cbFilters.SelectedIndex].Name;
+
+        // Try to fetch real favorites in background and replace when ready
+        if (IsJiraEnabled)
+        {
+            _ = System.Threading.Tasks.Task.Run(() =>
+            {
+                try
+                {
+                    restClientFactory.BaseUrl = Settings.Instance.JiraBaseUrl;
+                    jiraClient.Authenticate(Settings.Instance.Username, Settings.Instance.ApiToken);
+                    if (jiraClient.ValidateSession())
+                    {
+                        var favs = jiraClient.GetFavoriteFilters();
+                        if (favs != null && favs.Count > 0)
+                        {
+                            Dispatcher.UIThread.Post(() =>
+                            {
+                                cbFilters.Items.Clear();
+                                filters.Clear();
+                                foreach (var f in favs)
+                                {
+                                    filters.Add(new FilterItem { Id = f.Id, Name = f.Name, Jql = f.Jql });
+                                    cbFilters.Items.Add(f.Name);
+                                }
+                                cbFilters.SelectedIndex = Math.Min(Math.Max(0, Settings.Instance.CurrentFilter), filters.Count - 1);
+                                lblActiveFilter.Text = filters[cbFilters.SelectedIndex].Name;
+                            });
+                        }
+                    }
+                }
+                catch { }
+            });
+        }
     }
 
     private void LoadPersistedIssues()
@@ -377,7 +516,7 @@ public partial class MainWindow : Window
     {
         var issueControl = new IssueControl();
         issueControl.SetIssue(issue);
-        issueControl.IssueKeyChanged += async (s, key) => await UpdateIssueSummaryFromKey(issue, (IssueControl)s);
+        issueControl.IssueKeyEntered += async (s, key) => await UpdateIssueSummaryFromKey(issue, (IssueControl)s);
         issueControl.CommentChanged += (s, e) => UpdateIssueComment(issue.Key, issue.Comment);
         issueControl.StartStopClicked += (s, e) => ToggleIssueTimer(issue.Key, ((IssueControl)s).btnStartStop);
         issueControl.btnRemove.Click += (s, e) => RemoveIssue(issue.Key);
@@ -451,7 +590,10 @@ public partial class MainWindow : Window
 
             // Here we would fetch issues from Jira based on current filter
             // For now, just update the status
-            lblConnectionStatus.Text = "Connected to Jira";
+            if (jiraClient != null && jiraClient.SessionValid)
+                lblConnectionStatus.Text = "Connected to Jira";
+            else
+                lblConnectionStatus.Text = Localization.Localizer.T("Status_NotConnected");
         }
         catch (Exception ex)
         {
@@ -799,6 +941,7 @@ public partial class MainWindow : Window
 
             if (searchResult != null && searchResult.Issues != null)
             {
+                lblConnectionStatus.Text = "Connected to Jira";
                 // Add issues from Jira that are not already in our list
                 foreach (var jiraIssue in searchResult.Issues)
                 {
@@ -918,11 +1061,14 @@ public partial class MainWindow : Window
         bool? submit = await dlg.ShowDialog<bool?>(this);
         if (submit == null)
         {
-            // Save for later: keep time but pause
+            // Save for later: keep (possibly edited) time but pause
+            var timeToKeep = dlg.TimeSpentOverride ?? elapsed;
             issue.Timer.Pause();
+            issue.Timer.TimeElapsed = timeToKeep; // persist edited time in timer state
             issue.IsRunning = false;
-            issue.Time = elapsed.ToString(@"hh\:mm\:ss");
-            UpdateIssueDisplayTime(issue.Key, elapsed);
+            issue.Comment = dlg.Comment; // keep edited comment
+            issue.Time = timeToKeep.ToString(@"hh\:mm\:ss");
+            UpdateIssueDisplayTime(issue.Key, timeToKeep);
             SaveIssues();
             return;
         }
@@ -933,6 +1079,8 @@ public partial class MainWindow : Window
             var ok = jiraClient.PostWorklog(key, dlg.InitialStartTime, timeToLog, dlg.Comment, dlg.EstimateUpdateMethod, dlg.EstimateUpdateValue);
             if (ok)
             {
+                // Update local comment to last used
+                issue.Comment = dlg.Comment;
                 // Optional post comment alone
                 if (Settings.Instance.PostWorklogComment == WorklogCommentSetting.CommentOnly)
                 {
@@ -1058,7 +1206,7 @@ public partial class MainWindow : Window
         issue.Key = text;
         try
         {
-            if (IsJiraEnabled && jiraClient.ValidateSession())
+            if (IsJiraEnabled && jiraClient.SessionValid)
             {
                 var details = await Task.Run(() => jiraClient.GetIssueDetails(text));
                 if (details != null)
@@ -1066,6 +1214,7 @@ public partial class MainWindow : Window
                     var summary = Settings.Instance.IncludeProjectName ? details.Fields.Project.Name + ": " + details.Fields.Summary : details.Fields.Summary;
                     issueControl.UpdateSummary(summary ?? "");
                     issueControl.SetIssueKeyReadOnly(true);
+                    issueControl.SetButtonsForFetched(true);
                     // Gray out if status is Done
                     try
                     {
@@ -1095,6 +1244,24 @@ public partial class MainWindow : Window
         }
         catch { }
         SaveIssues();
+    }
+
+    private void RefreshAllIssueSummaries()
+    {
+        try
+        {
+            foreach (var i in issues.Where(x => !string.IsNullOrWhiteSpace(x.Key)))
+            {
+                var issueControl = issuesPanel.Children.OfType<Border>()
+                    .Select(b => b.Child as IssueControl)
+                    .FirstOrDefault(ic => ic?.Issue.Key == i.Key);
+                if (issueControl != null)
+                {
+                    _ = UpdateIssueSummaryFromKey(i, issueControl);
+                }
+            }
+        }
+        catch { }
     }
 
     private void OpenIssueInBrowser(string key)

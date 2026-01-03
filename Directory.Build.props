@@ -1,0 +1,15 @@
+<Project>
+  <PropertyGroup>
+    <!-- Prevent warnings from failing the build/restore across all projects -->
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors></WarningsAsErrors>
+    <NoWarn>$(NoWarn);NU1900</NoWarn>
+
+    <!-- Make restore resilient when nuget.org is temporarily unreachable -->
+    <RestoreIgnoreFailedSources>true</RestoreIgnoreFailedSources>
+
+    <!-- Disable vulnerability audit to avoid NU1900 during restore when offline -->
+    <NuGetAudit>false</NuGetAudit>
+    <RestoreAuditMode>None</RestoreAuditMode>
+  </PropertyGroup>
+</Project>

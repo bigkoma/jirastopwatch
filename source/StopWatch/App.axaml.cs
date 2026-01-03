@@ -32,6 +32,10 @@ public partial class App : Application
             if (mutex.WaitOne(TimeSpan.Zero, true))
             {
                 desktop.MainWindow = new MainWindow();
+                // Explicitly show and focus the window to avoid cases where it starts minimized/hidden on macOS
+                desktop.MainWindow.Show();
+                desktop.MainWindow.WindowState = Avalonia.Controls.WindowState.Normal;
+                desktop.MainWindow.Activate();
                 desktop.Exit += (s, e) => mutex.ReleaseMutex();
             }
             else
