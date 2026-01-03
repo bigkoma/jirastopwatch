@@ -70,6 +70,7 @@ public partial class SettingsWindow : Window
         cbLoggingEnabled.IsChecked = settings.LoggingEnabled;
         cbCheckForUpdate.IsChecked = settings.CheckForUpdate;
         tbStartTransitions.Text = settings.StartTransitions;
+        tbIssueCount.Text = Math.Max(1, settings.IssueCount).ToString();
         // Set selected enum values if items already populated
         if (cbSaveTimerState.ItemCount > 0)
             cbSaveTimerState.SelectedIndex = (int)settings.SaveTimerState;
@@ -131,6 +132,8 @@ public partial class SettingsWindow : Window
         settings.LoggingEnabled = cbLoggingEnabled.IsChecked ?? false;
         settings.CheckForUpdate = cbCheckForUpdate.IsChecked ?? true;
         settings.StartTransitions = tbStartTransitions.Text ?? string.Empty;
+        if (int.TryParse(tbIssueCount.Text, out var cnt) && cnt > 0)
+            settings.IssueCount = cnt;
         settings.SaveTimerState = (SaveTimerSetting)(cbSaveTimerState.SelectedIndex >= 0 ? cbSaveTimerState.SelectedIndex : 0);
         settings.PauseOnSessionLock = (PauseAndResumeSetting)(cbPauseOnSessionLock.SelectedIndex >= 0 ? cbPauseOnSessionLock.SelectedIndex : 0);
         settings.PostWorklogComment = (WorklogCommentSetting)(cbPostWorklogComment.SelectedIndex >= 0 ? cbPostWorklogComment.SelectedIndex : 0);

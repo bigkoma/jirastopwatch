@@ -18,6 +18,7 @@ public partial class IssueControl : UserControl
     public event EventHandler IssueSummaryClicked;
     public event EventHandler TransitionClicked;
     public event EventHandler ResetClicked;
+    public event EventHandler AddRemoveClicked;
 
     public IssueControl()
     {
@@ -40,6 +41,7 @@ public partial class IssueControl : UserControl
         SetStartStopIcon(issue.IsRunning);
         lblSummary.Text = ""; // Will be updated later
         SetButtonsForFetched(false); // Enable only start/stop and remove for unfetched issues
+        SetAddRemoveMode(issue.IsLocal);
     }
 
     public void UpdateSummary(string summary)
@@ -101,6 +103,11 @@ public partial class IssueControl : UserControl
     private void BtnReset_Click(object sender, RoutedEventArgs e)
     {
         ResetClicked?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void BtnAddRemove_Click(object sender, RoutedEventArgs e)
+    {
+        AddRemoveClicked?.Invoke(this, EventArgs.Empty);
     }
 
     public void UpdateTime(string time)
@@ -213,5 +220,32 @@ public partial class IssueControl : UserControl
         catch { btnRemove.Content = "X"; }
         // Done/status mark as check emoji (smaller to avoid clipping)
         btnTransition.Content = new TextBlock { Text = "✅", FontSize = 14, HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center };
+
+        // Wire add/remove handler
+        btnRemove.Click += BtnAddRemove_Click;
+    }
+
+    public void SetAddRemoveMode(bool isLocal)
+    {
+        try
+        {
+            if (isLocal)
+            {
+                // Delete icon
+                var delUri = new Uri("avares://StopWatch/icons/delete24.png");
+                using var ds = AssetLoader.Open(delUri);
+                btnRemove.Content = new Image { Source = new Bitmap(ds), Width = 16, Height = 16 };
+                ToolTip.SetTip(btnRemove, Localization.Localizer.T("Tooltip_Delete"));
+            }
+            else
+            {
+                // Add icon (reuse top bar icon)
+                var addUri = new Uri("avares://StopWatch/icons/addissue22.png");
+                using var asrc = AssetLoader.Open(addUri);
+                btnRemove.Content = new Image { Source = new Bitmap(asrc), Width = 18, Height = 18 };
+                ToolTip.SetTip(btnRemove, Localization.Localizer.T("Tooltip_AddLocal"));
+            }
+        }
+        catch { }
     }
 }

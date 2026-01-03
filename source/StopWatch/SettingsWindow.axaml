@@ -96,8 +96,12 @@
 
             <CheckBox Grid.Row="18" Grid.Column="0" Grid.ColumnSpan="2" x:Name="cbCheckForUpdate" Content="Check for updates automatically" Margin="0,10,0,0"/>
 
+            <!-- Issue fetch count -->
+            <TextBlock Grid.Row="19" Grid.Column="0" x:Name="txtIssueCount" Text="Max issues from filter:" VerticalAlignment="Center" Margin="0,10,5,0"/>
+            <TextBox Grid.Row="19" Grid.Column="1" x:Name="tbIssueCount" Width="80"/>
+
             <!-- Bottom Buttons -->
-            <StackPanel Grid.Row="19" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <StackPanel Grid.Row="20" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
                 <Button x:Name="btnAbout" Content="About" Width="90" Margin="0,0,10,0" Click="BtnAbout_Click"/>
                 <Button x:Name="btnOK" Content="OK" Width="90" Margin="0,0,10,0" Click="BtnOK_Click"/>
                 <Button x:Name="btnCancel" Content="Cancel" Width="90" Click="BtnCancel_Click"/>

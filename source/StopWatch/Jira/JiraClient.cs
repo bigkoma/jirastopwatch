@@ -86,6 +86,7 @@ namespace StopWatch
             }
             catch (RequestDeniedException)
             {
+                ErrorMessage = jiraApiRequester.ErrorMessage;
                 return null;
             }
         }
@@ -107,6 +108,7 @@ namespace StopWatch
             }
             catch (RequestDeniedException)
             {
+                ErrorMessage = jiraApiRequester.ErrorMessage;
                 return null;
             }
         }
@@ -120,6 +122,7 @@ namespace StopWatch
             }
             catch (RequestDeniedException)
             {
+                ErrorMessage = jiraApiRequester.ErrorMessage;
                 return null;
             }
         }
@@ -134,6 +137,7 @@ namespace StopWatch
             }
             catch (RequestDeniedException)
             {
+                ErrorMessage = jiraApiRequester.ErrorMessage;
                 return null;
             }
         }
@@ -148,6 +152,7 @@ namespace StopWatch
             }
             catch (RequestDeniedException)
             {
+                ErrorMessage = jiraApiRequester.ErrorMessage;
                 return false;
             }
         }
@@ -163,6 +168,7 @@ namespace StopWatch
             }
             catch (RequestDeniedException)
             {
+                ErrorMessage = jiraApiRequester.ErrorMessage;
                 return false;
             }
         }
@@ -177,6 +183,7 @@ namespace StopWatch
             }
             catch (RequestDeniedException)
             {
+                ErrorMessage = jiraApiRequester.ErrorMessage;
                 return null;
             }
         }
@@ -192,6 +199,7 @@ namespace StopWatch
             }
             catch (RequestDeniedException)
             {
+                ErrorMessage = jiraApiRequester.ErrorMessage;
                 return false;
             }
         }

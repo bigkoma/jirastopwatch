@@ -21,6 +21,9 @@ public class IssueViewModel
     public string Comment { get; set; }
     public bool IsRunning { get; set; }
     internal WatchTimer Timer { get; set; } = new WatchTimer();
+    public DateTime DateAddedUtc { get; set; } = DateTime.UtcNow;
+    public bool IsLocal { get; set; } = true;
+    public DateTime? CreatedUtc { get; set; }
 }
 
 public class FilterItem
@@ -44,6 +47,7 @@ public partial class MainWindow : Window
     private TrayIcon _trayIcon;
     private bool _trayWarningShown;
     private bool _trayHandlingEnabled;
+    private bool _localFilterContext;
 
     public MainWindow()
     {
@@ -430,24 +434,19 @@ public partial class MainWindow : Window
 
     private void InitializeLogger()
     {
-        if (Settings.Instance.LoggingEnabled)
-        {
-            Logger.Instance.Enabled = true;
-            Logger.Instance.LogfilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "jirastopwatch", "jirastopwatch.log");
-        }
+        // Force-enable logging in debug sessions to aid diagnostics
+        Logger.Instance.Enabled = true;
+        Logger.Instance.LogfilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "jirastopwatch", "jirastopwatch.log");
     }
 
     private void SetupFilters()
     {
-        cbFilters.Items.Clear();
+        // Build filters deterministically so ComboBox and 'filters' are aligned 1:1
         filters.Clear();
-        
-        // Always populate quick fallback filters immediately so UI is ready
-        filters.Add(new FilterItem { Id = 0, Name = Localization.Localizer.T("Filter_All"), Jql = "" });
-        filters.Add(new FilterItem { Id = 1, Name = Localization.Localizer.T("Filter_Mine"), Jql = "assignee = currentUser()" });
-        filters.Add(new FilterItem { Id = 2, Name = Localization.Localizer.T("Filter_Recent"), Jql = "updated > -7d" });
-        foreach (var filter in filters)
-            cbFilters.Items.Add(filter.Name);
+        AddPseudoFilters(); // adds to 'filters' only
+        filters.Add(new FilterItem { Id = 1, Name = Localization.Localizer.T("Filter_Mine"), Jql = "assignee = currentUser() AND statusCategory != Done" });
+        filters.Add(new FilterItem { Id = 2, Name = Localization.Localizer.T("Filter_Recent"), Jql = "updated > -7d AND statusCategory != Done" });
+        RebuildFilterComboItems();
         cbFilters.SelectedIndex = Math.Min(Math.Max(0, Settings.Instance.CurrentFilter), filters.Count - 1);
         lblActiveFilter.Text = filters[cbFilters.SelectedIndex].Name;
 
@@ -467,13 +466,16 @@ public partial class MainWindow : Window
                         {
                             Dispatcher.UIThread.Post(() =>
                             {
-                                cbFilters.Items.Clear();
                                 filters.Clear();
+                                AddPseudoFilters();
+                                // Keep built-in defaults as well
+                                filters.Add(new FilterItem { Id = 1, Name = Localization.Localizer.T("Filter_Mine"), Jql = "assignee = currentUser() AND statusCategory != Done" });
+                                filters.Add(new FilterItem { Id = 2, Name = Localization.Localizer.T("Filter_Recent"), Jql = "updated > -7d AND statusCategory != Done" });
                                 foreach (var f in favs)
                                 {
                                     filters.Add(new FilterItem { Id = f.Id, Name = f.Name, Jql = f.Jql });
-                                    cbFilters.Items.Add(f.Name);
                                 }
+                                RebuildFilterComboItems();
                                 cbFilters.SelectedIndex = Math.Min(Math.Max(0, Settings.Instance.CurrentFilter), filters.Count - 1);
                                 lblActiveFilter.Text = filters[cbFilters.SelectedIndex].Name;
                             });
@@ -485,6 +487,32 @@ public partial class MainWindow : Window
         }
     }
 
+    private void RebuildFilterComboItems()
+    {
+        cbFilters.Items.Clear();
+        foreach (var f in filters)
+        {
+            if (f.Jql == "#LOCAL" || f.Jql == "#RUNNING")
+            {
+                cbFilters.Items.Add(new TextBlock { Text = f.Name, FontWeight = Avalonia.Media.FontWeight.Bold });
+            }
+            else
+            {
+                cbFilters.Items.Add(f.Name);
+            }
+        }
+    }
+
+    private void AddPseudoFilters()
+    {
+        var all = new FilterItem { Id = 0, Name = Localization.Localizer.T("Filter_All"), Jql = "" };
+        var local = new FilterItem { Id = -1, Name = Localization.Localizer.T("Filter_Local"), Jql = "#LOCAL" };
+        var running = new FilterItem { Id = -2, Name = Localization.Localizer.T("Filter_Running"), Jql = "#RUNNING" };
+        filters.Add(all);
+        filters.Add(local);
+        filters.Add(running);
+    }
+
     private void LoadPersistedIssues()
     {
         var persisted = Settings.Instance.ReadIssues(Settings.Instance.PersistedIssues);
@@ -493,12 +521,16 @@ public partial class MainWindow : Window
 
         foreach (var issue in persisted)
         {
+            // Backward-compat: older persisted entries had no IsLocal/DateAdded; treat them as local
+            bool isLocal = issue.IsLocal || issue.DateAddedUtc == default;
             var issueViewModel = new IssueViewModel
             {
                 Key = issue.Key,
                 Time = issue.TotalTime.ToString(@"hh\:mm\:ss"),
                 Comment = issue.Comment ?? "",
-                IsRunning = issue.TimerRunning
+                IsRunning = issue.TimerRunning,
+                DateAddedUtc = issue.DateAddedUtc == default ? DateTime.UtcNow : issue.DateAddedUtc,
+                IsLocal = isLocal
             };
             issueViewModel.Timer.TimeElapsed = issue.TotalTime;
             issues.Add(issueViewModel);
@@ -519,7 +551,7 @@ public partial class MainWindow : Window
         issueControl.IssueKeyEntered += async (s, key) => await UpdateIssueSummaryFromKey(issue, (IssueControl)s);
         issueControl.CommentChanged += (s, e) => UpdateIssueComment(issue.Key, issue.Comment);
         issueControl.StartStopClicked += (s, e) => ToggleIssueTimer(issue.Key, ((IssueControl)s).btnStartStop);
-        issueControl.btnRemove.Click += (s, e) => RemoveIssue(issue.Key);
+        issueControl.AddRemoveClicked += (s, e) => ToggleLocal(issue.Key, (IssueControl)s);
         issueControl.LogWorkClicked += async (s, e) => await LogWorkForIssue(issue.Key);
         issueControl.TransitionClicked += async (s, e) => await TransitionIssueToDone(issue.Key);
         issueControl.IssueSummaryClicked += (s, e) => OpenIssueInBrowser(((IssueControl)s).Issue.Key);
@@ -534,10 +566,29 @@ public partial class MainWindow : Window
             Child = issueControl
         };
         issuesPanel.Children.Add(border);
+        UpdateIssueRowAppearance(issue.Key);
 
         // Initially load summary if we have a key
         _ = UpdateIssueSummaryFromKey(issue, issueControl);
+        // Set add/remove icon according to current filter context (Local => delete, others => add)
+        try { issueControl.SetAddRemoveMode(_localFilterContext); } catch { }
         return issueControl;
+    }
+
+    private void ToggleLocal(string issueKey, IssueControl control)
+    {
+        var issue = issues.FirstOrDefault(i => i.Key == issueKey);
+        if (issue == null) return;
+        if (issue.IsLocal)
+        {
+            RemoveIssue(issueKey);
+        }
+        else
+        {
+            issue.IsLocal = true;
+            control?.SetAddRemoveMode(true);
+            SaveIssues();
+        }
     }
 
     private void ResetIssue(string issueKey)
@@ -707,7 +758,9 @@ public partial class MainWindow : Window
                 Key = string.Empty,
                 Time = "00:00:00",
                 Comment = string.Empty,
-                IsRunning = false
+                IsRunning = false,
+                DateAddedUtc = DateTime.UtcNow,
+                IsLocal = true
             };
             issues.Add(emptyIssue);
             var c = AddIssueControl(emptyIssue);
@@ -722,7 +775,9 @@ public partial class MainWindow : Window
                 Key = issueKey,
                 Time = "00:00:00",
                 Comment = "",
-                IsRunning = false
+                IsRunning = false,
+                DateAddedUtc = DateTime.UtcNow,
+                IsLocal = true
             };
             issues.Add(newIssue);
             var c = AddIssueControl(newIssue);
@@ -748,6 +803,15 @@ public partial class MainWindow : Window
             {
                 issue.Timer.Start();
                 issue.IsRunning = true;
+                if (!issue.IsLocal)
+                {
+                    issue.IsLocal = true; // auto-add to local when started
+                    var ic = issuesPanel.Children.OfType<Border>()
+                        .Select(b => b.Child as IssueControl)
+                        .FirstOrDefault(x => x?.Issue.Key == issueKey);
+                    ic?.SetAddRemoveMode(true);
+                    SaveIssues();
+                }
             }
             // Update the button in the IssueControl
             var issueControl = issuesPanel.Children.OfType<Border>()
@@ -757,6 +821,7 @@ public partial class MainWindow : Window
             {
                 issueControl.UpdateStartStopButton(issue.IsRunning);
             }
+            UpdateIssueRowAppearance(issueKey);
         }
     }
 
@@ -897,12 +962,16 @@ public partial class MainWindow : Window
                 issue.Time = issue.Timer.TimeElapsed.ToString(@"hh\:mm\:ss");
             }
 
-            var persisted = issues.Select(i => new PersistedIssue
+            var persisted = issues
+                .Where(i => i.IsLocal || i.IsRunning || TimeSpan.Parse(i.Time) > TimeSpan.Zero)
+                .Select(i => new PersistedIssue
             {
                 Key = i.Key,
                 TotalTime = TimeSpan.Parse(i.Time),
                 Comment = i.Comment,
-                TimerRunning = i.IsRunning
+                TimerRunning = i.IsRunning,
+                DateAddedUtc = i.DateAddedUtc,
+                IsLocal = i.IsLocal
             }).ToList();
             Settings.Instance.PersistedIssues = Settings.Instance.WriteIssues(persisted);
             Settings.Instance.Save();
@@ -921,7 +990,113 @@ public partial class MainWindow : Window
             lblActiveFilter.Text = selectedFilter.Name;
             Settings.Instance.CurrentFilter = cbFilters.SelectedIndex;
             Settings.Instance.Save();
-            LoadIssuesFromJira(selectedFilter.Jql);
+            // Special pseudo-filters
+            if (selectedFilter.Jql == "#LOCAL")
+            {
+                _localFilterContext = true;
+                ApplyLocalFilterView();
+                UpdateAddRemoveButtonsForContext();
+            }
+            else if (selectedFilter.Jql == "#RUNNING")
+            {
+                _localFilterContext = false;
+                ApplyRunningFilterView();
+                UpdateAddRemoveButtonsForContext();
+            }
+            else
+            {
+                _localFilterContext = false;
+                // Build valid JQL by inserting extra predicate before ORDER BY (if present)
+                var jql = BuildAugmentedJql(selectedFilter.Jql);
+                LoadIssuesFromJira(jql);
+            }
+        }
+    }
+
+    private string BuildAugmentedJql(string baseJql)
+    {
+        var jql = baseJql?.Trim() ?? string.Empty;
+        // Default when empty
+        if (string.IsNullOrWhiteSpace(jql))
+            return "statusCategory != Done ORDER BY created DESC";
+
+        var lower = jql.ToLowerInvariant();
+        int orderIdx = lower.IndexOf(" order by ");
+        string conditions = jql;
+        string order = string.Empty;
+        if (orderIdx >= 0)
+        {
+            conditions = jql.Substring(0, orderIdx).TrimEnd();
+            order = jql.Substring(orderIdx); // keep as-is
+        }
+
+        // Append our extra predicate if not present
+        if (!conditions.ToLowerInvariant().Contains("statuscategory != done"))
+        {
+            if (!string.IsNullOrWhiteSpace(conditions))
+                conditions = conditions + " AND statusCategory != Done";
+            else
+                conditions = "statusCategory != Done";
+        }
+
+        if (string.IsNullOrWhiteSpace(order))
+            order = " ORDER BY created DESC";
+
+        return conditions + order;
+    }
+
+    private void ApplyLocalFilterView()
+    {
+        // Show only local issues and any running issues
+        foreach (var border in issuesPanel.Children.OfType<Border>())
+        {
+            if (border.Child is IssueControl ic)
+            {
+                var iss = issues.FirstOrDefault(i => i.Key == ic.Issue.Key);
+                border.IsVisible = iss != null && (iss.IsLocal || iss.IsRunning);
+                if (border.IsVisible)
+                    ic.SetAddRemoveMode(true); // Local view => delete
+            }
+        }
+        SortVisibleIssuesBy(i => i.IsLocal ? i.DateAddedUtc : DateTime.MinValue, descending: true);
+    }
+
+    private void ApplyRunningFilterView()
+    {
+        foreach (var border in issuesPanel.Children.OfType<Border>())
+        {
+            if (border.Child is IssueControl ic)
+            {
+                var iss = issues.FirstOrDefault(i => i.Key == ic.Issue.Key);
+                border.IsVisible = iss != null && iss.IsRunning;
+                if (border.IsVisible)
+                    ic.SetAddRemoveMode(false); // Non-local view => add
+            }
+        }
+    }
+
+    private void UpdateAddRemoveButtonsForContext()
+    {
+        foreach (var border in issuesPanel.Children.OfType<Border>())
+        {
+            if (border.Child is IssueControl ic && border.IsVisible)
+            {
+                ic.SetAddRemoveMode(_localFilterContext);
+            }
+        }
+    }
+
+    private void SortVisibleIssuesBy(Func<IssueViewModel, DateTime> keySelector, bool descending)
+    {
+        var map = issuesPanel.Children.OfType<Border>()
+            .Where(b => b.IsVisible && b.Child is IssueControl)
+            .Select(b => new { Border = b, Issue = issues.FirstOrDefault(i => i.Key == ((IssueControl)b.Child).Issue.Key) })
+            .Where(x => x.Issue != null)
+            .ToList();
+        var sorted = descending ? map.OrderByDescending(x => keySelector(x.Issue)).ToList() : map.OrderBy(x => keySelector(x.Issue)).ToList();
+        for (int i = 0; i < sorted.Count; i++)
+        {
+            issuesPanel.Children.Move(issuesPanel.Children.IndexOf(sorted[i].Border), i);
         }
     }
 
@@ -956,8 +1131,17 @@ public partial class MainWindow : Window
             if (searchResult != null && searchResult.Issues != null)
             {
                 lblConnectionStatus.Text = "Connected to Jira";
-                // Add issues from Jira that are not already in our list
-                foreach (var jiraIssue in searchResult.Issues)
+                // Add issues from Jira (sorted, limited) and merge into list without hiding local items
+                // Sort by created descending if available
+                var issuesSorted = searchResult.Issues
+                    .OrderByDescending(i =>
+                    {
+                        try { return DateTime.Parse(i.Fields.Created); } catch { return DateTime.MinValue; }
+                    })
+                    .ToList();
+                int added = 0;
+                var resultKeys = new HashSet<string>(issuesSorted.Select(i => i.Key));
+                foreach (var jiraIssue in issuesSorted)
                 {
                     if (!issues.Any(i => i.Key == jiraIssue.Key))
                     {
@@ -966,23 +1150,53 @@ public partial class MainWindow : Window
                             Key = jiraIssue.Key,
                             Time = "00:00:00",
                             Comment = jiraIssue.Fields.Summary ?? "",
-                            IsRunning = false
+                            IsRunning = false,
+                            IsLocal = false,
+                            DateAddedUtc = DateTime.UtcNow,
+                            CreatedUtc = ParseDateOrNull(jiraIssue.Fields.Created)
                         };
                         issues.Add(newIssue);
                         AddIssueControl(newIssue);
+                        added++;
+                        if (added >= Settings.Instance.IssueCount) break;
+                    }
+                }
+
+                // Set visibility: show fetched issues plus always show local/running
+                foreach (var border in issuesPanel.Children.OfType<Border>())
+                {
+                    if (border.Child is IssueControl ic)
+                    {
+                        var iss = issues.FirstOrDefault(i => i.Key == ic.Issue.Key);
+                        if (iss == null) { border.IsVisible = false; continue; }
+                        border.IsVisible = resultKeys.Contains(iss.Key) || iss.IsLocal || iss.IsRunning;
+                        if (border.IsVisible)
+                            ic.SetAddRemoveMode(false); // JIRA view => show add
                     }
                 }
                 lblConnectionStatus.Text = string.Format(Localization.Localizer.T("Status_ConnectedLoaded"), searchResult.Issues.Count);
             }
             else
             {
-                lblConnectionStatus.Text = "Failed to load issues";
+                var extra = string.IsNullOrEmpty(jiraClient?.ErrorMessage) ? string.Empty : $": {jiraClient.ErrorMessage}";
+                lblConnectionStatus.Text = "Failed to load issues" + extra;
+                // Fallback: show local and running so lista nie znika
+                ApplyLocalFilterView();
             }
         }
         catch (Exception ex)
         {
             lblConnectionStatus.Text = string.Format(Localization.Localizer.T("Status_LoadError"), ex.Message);
+            // Fallback
+            ApplyLocalFilterView();
         }
+    }
+
+    private DateTime? ParseDateOrNull(string s)
+    {
+        if (string.IsNullOrWhiteSpace(s)) return null;
+        if (DateTime.TryParse(s, out var d)) return d;
+        return null;
     }
 
     private void MenuSettings_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -1192,12 +1406,26 @@ public partial class MainWindow : Window
     private void UpdateIssueDisplayTime(string issueKey, TimeSpan time)
     {
         // Find the IssueControl and update the time display
-        var issueControl = issuesPanel.Children.OfType<Border>()
-            .Select(b => b.Child as IssueControl)
-            .FirstOrDefault(ic => ic?.Issue.Key == issueKey);
-        if (issueControl != null)
+        var border = issuesPanel.Children.OfType<Border>()
+            .FirstOrDefault(b => (b.Child as IssueControl)?.Issue.Key == issueKey);
+        if (border?.Child is IssueControl issueControl)
         {
             issueControl.UpdateTime(time.ToString(@"hh\:mm\:ss"));
+            UpdateIssueRowAppearance(issueKey);
+        }
+    }
+
+    private void UpdateIssueRowAppearance(string issueKey)
+    {
+        var border = issuesPanel.Children.OfType<Border>()
+            .FirstOrDefault(b => (b.Child as IssueControl)?.Issue.Key == issueKey);
+        var iss = issues.FirstOrDefault(i => i.Key == issueKey);
+        if (border != null && iss != null)
+        {
+            // Use a much lighter, transparent highlight for running tasks
+            border.Background = iss.IsRunning
+                ? new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#22FFFDE7")) // translucent pale yellow
+                : null;
         }
     }
 
@@ -1241,11 +1469,16 @@ public partial class MainWindow : Window
                     }
                     catch { }
                     var tooltip = details.Fields.Summary;
-                    if (!string.IsNullOrEmpty(details.Fields.Description))
+                    try
                     {
-                        var desc = details.Fields.Description.Length > 1000 ? details.Fields.Description.Substring(0, 1000) + "..." : details.Fields.Description;
-                        tooltip += "\n\n" + desc;
+                        if (details.Fields.Description.HasValue && details.Fields.Description.Value.ValueKind != System.Text.Json.JsonValueKind.Null)
+                        {
+                            var raw = details.Fields.Description.Value.ToString();
+                            var desc = raw.Length > 1000 ? raw.Substring(0, 1000) + "..." : raw;
+                            tooltip += "\n\n" + desc;
+                        }
                     }
+                    catch { }
                     ToolTip.SetTip(issueControl.lblSummary, tooltip);
                 }
                 var tt = await Task.Run(() => jiraClient.GetIssueTimetracking(text));

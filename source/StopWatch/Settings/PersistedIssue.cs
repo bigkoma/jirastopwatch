@@ -24,5 +24,7 @@ namespace StopWatch
         public bool TimerRunning { get; set; }
         public TimeSpan TotalTime { get; set; }
         public string Comment { get; set; }
+        public DateTime DateAddedUtc { get; set; }
+        public bool IsLocal { get; set; }
     }
 }

@@ -40,7 +40,7 @@ namespace StopWatch
 
             _logger.Log(string.Format("Request: {0}", client.BuildUri(request)));
             RestResponse<T> response = client.Execute<T>(request);
-            _logger.Log(string.Format("Response: {0} - {1}", response.StatusCode, StringHelpers.Truncate(response.Content, 100)));
+            _logger.Log(string.Format("Response: {0} - {1}", response.StatusCode, StringHelpers.Truncate(response.Content, 500)));
 
             // If login session has expired, try to login, and then re-execute the original request
             if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.BadRequest)
@@ -50,7 +50,7 @@ namespace StopWatch
 
             if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.Created)
             {
-                ErrorMessage = response.ErrorMessage;
+                ErrorMessage = string.IsNullOrWhiteSpace(response.ErrorMessage) ? response.Content : response.ErrorMessage;
                 throw new RequestDeniedException();
             }
 
@@ -66,7 +66,7 @@ namespace StopWatch
 
             _logger.Log(string.Format("Request: {0}", client.BuildUri(request)));
             RestResponse response = client.Execute(request);
-            _logger.Log(string.Format("Response: {0} - {1}", response.StatusCode, StringHelpers.Truncate(response.Content, 100)));
+            _logger.Log(string.Format("Response: {0} - {1}", response.StatusCode, StringHelpers.Truncate(response.Content, 500)));
 
             // If login session has expired, try to login, and then re-execute the original request
             if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.BadRequest)
@@ -77,7 +77,7 @@ namespace StopWatch
             // For transitions, accept OK, Created, and NoContent as successful
             if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.Created && response.StatusCode != HttpStatusCode.NoContent)
             {
-                ErrorMessage = response.ErrorMessage;
+                ErrorMessage = string.IsNullOrWhiteSpace(response.ErrorMessage) ? response.Content : response.ErrorMessage;
                 throw new RequestDeniedException();
             }
 
