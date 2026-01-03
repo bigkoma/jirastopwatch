@@ -14,7 +14,7 @@
             </Button>
             <TextBox Grid.Row="0" Grid.Column="3" x:Name="tbTimeBox" Width="80" Height="28" Text="0m" IsReadOnly="True" HorizontalContentAlignment="Center"/>
             <TextBlock x:Name="lblTime" Grid.Row="0" Grid.Column="3" IsVisible="False" Text="00:00:00"/>
-            <Button Grid.Row="0" Grid.Column="4" Width="28" Height="28" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" ToolTip.Tip="Reset">
+            <Button x:Name="btnReset" Grid.Row="0" Grid.Column="4" Width="28" Height="28" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" ToolTip.Tip="Reset" Click="BtnReset_Click">
                 <Image Source="avares://StopWatch/icons/reset24.png" Width="16" Height="16"/>
             </Button>
             <Button x:Name="btnLogWork" Grid.Row="0" Grid.Column="5" Width="28" Height="28" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" ToolTip.Tip="Post worklog" Click="BtnLogWork_Click"/>

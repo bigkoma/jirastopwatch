@@ -17,6 +17,7 @@ public partial class IssueControl : UserControl
     public event EventHandler LogWorkClicked;
     public event EventHandler IssueSummaryClicked;
     public event EventHandler TransitionClicked;
+    public event EventHandler ResetClicked;
 
     public IssueControl()
     {
@@ -97,6 +98,11 @@ public partial class IssueControl : UserControl
         IssueSummaryClicked?.Invoke(this, EventArgs.Empty);
     }
 
+    private void BtnReset_Click(object sender, RoutedEventArgs e)
+    {
+        ResetClicked?.Invoke(this, EventArgs.Empty);
+    }
+
     public void UpdateTime(string time)
     {
         lblTime.Text = time;
@@ -142,9 +148,11 @@ public partial class IssueControl : UserControl
     {
         try
         {
-            btnStartStop.IsEnabled = true; // Always enabled
-            btnLogWork.IsEnabled = fetched;
-            btnTransition.IsEnabled = fetched;
+            // All main actions should be clickable regardless of fetch status
+            btnStartStop.IsEnabled = true;
+            btnLogWork.IsEnabled = true;
+            btnTransition.IsEnabled = true;
+            btnRemove.IsEnabled = true;
         }
         catch { }
     }
@@ -159,10 +167,12 @@ public partial class IssueControl : UserControl
         try
         {
             this.Opacity = done ? 0.5 : 1.0;
-            btnStartStop.IsEnabled = !done;
-            btnLogWork.IsEnabled = !done;
-            btnTransition.IsEnabled = !done;
-            tbComment.IsEnabled = !done;
+            // Keep actions enabled even if the issue looks done; user can still operate
+            btnStartStop.IsEnabled = true;
+            btnLogWork.IsEnabled = true;
+            btnTransition.IsEnabled = true;
+            btnRemove.IsEnabled = true;
+            tbComment.IsEnabled = true;
         }
         catch { }
     }

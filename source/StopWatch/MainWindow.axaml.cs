@@ -523,6 +523,7 @@ public partial class MainWindow : Window
         issueControl.LogWorkClicked += async (s, e) => await LogWorkForIssue(issue.Key);
         issueControl.TransitionClicked += async (s, e) => await TransitionIssueToDone(issue.Key);
         issueControl.IssueSummaryClicked += (s, e) => OpenIssueInBrowser(((IssueControl)s).Issue.Key);
+        issueControl.ResetClicked += (s, e) => ResetIssue(issue.Key);
 
         // Wrap in border for removal
         var border = new Border
@@ -537,6 +538,19 @@ public partial class MainWindow : Window
         // Initially load summary if we have a key
         _ = UpdateIssueSummaryFromKey(issue, issueControl);
         return issueControl;
+    }
+
+    private void ResetIssue(string issueKey)
+    {
+        var issue = issues.FirstOrDefault(i => i.Key == issueKey);
+        if (issue != null)
+        {
+            issue.Timer.Reset();
+            issue.IsRunning = false;
+            issue.Time = "00:00:00";
+            UpdateIssueDisplayTime(issue.Key, TimeSpan.Zero);
+            SaveIssues();
+        }
     }
 
 
