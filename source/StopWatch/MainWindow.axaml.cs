@@ -570,7 +570,7 @@ public partial class MainWindow : Window
         // Initially load summary if we have a key
         _ = UpdateIssueSummaryFromKey(issue, issueControl);
         // Set add/remove icon according to current filter context (Local => delete, others => add)
-        try { issueControl.SetAddRemoveMode(_localFilterContext); } catch { }
+        try { issueControl.SetAddRemoveMode(issue.IsLocal); } catch { }
         return issueControl;
     }
 
@@ -1053,8 +1053,8 @@ public partial class MainWindow : Window
             {
                 var iss = issues.FirstOrDefault(i => i.Key == ic.Issue.Key);
                 border.IsVisible = iss != null && (iss.IsLocal || iss.IsRunning);
-                if (border.IsVisible)
-                    ic.SetAddRemoveMode(true); // Local view => delete
+                if (border.IsVisible && iss != null)
+                    ic.SetAddRemoveMode(iss.IsLocal);
             }
         }
         SortVisibleIssuesBy(i => i.IsLocal ? i.DateAddedUtc : DateTime.MinValue, descending: true);
@@ -1068,8 +1068,8 @@ public partial class MainWindow : Window
             {
                 var iss = issues.FirstOrDefault(i => i.Key == ic.Issue.Key);
                 border.IsVisible = iss != null && iss.IsRunning;
-                if (border.IsVisible)
-                    ic.SetAddRemoveMode(false); // Non-local view => add
+                if (border.IsVisible && iss != null)
+                    ic.SetAddRemoveMode(iss.IsLocal);
             }
         }
     }
@@ -1080,7 +1080,9 @@ public partial class MainWindow : Window
         {
             if (border.Child is IssueControl ic && border.IsVisible)
             {
-                ic.SetAddRemoveMode(_localFilterContext);
+                var iss = issues.FirstOrDefault(i => i.Key == ic.Issue.Key);
+                if (iss != null)
+                    ic.SetAddRemoveMode(iss.IsLocal);
             }
         }
     }
@@ -1169,8 +1171,8 @@ public partial class MainWindow : Window
                         var iss = issues.FirstOrDefault(i => i.Key == ic.Issue.Key);
                         if (iss == null) { border.IsVisible = false; continue; }
                         border.IsVisible = resultKeys.Contains(iss.Key) || iss.IsLocal || iss.IsRunning;
-                        if (border.IsVisible)
-                            ic.SetAddRemoveMode(false); // JIRA view => show add
+                        if (border.IsVisible && iss != null)
+                            ic.SetAddRemoveMode(iss.IsLocal);
                     }
                 }
                 lblConnectionStatus.Text = string.Format(Localization.Localizer.T("Status_ConnectedLoaded"), searchResult.Issues.Count);
