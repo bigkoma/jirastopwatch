@@ -118,7 +118,9 @@ namespace StopWatch
         {
             using (var aboutForm = new AboutForm())
             {
-                aboutForm.ShowDialog();
+                aboutForm.StartPosition = FormStartPosition.CenterParent;
+                aboutForm.TopMost = true;
+                aboutForm.ShowDialog(this);
             }
         }
         #endregion

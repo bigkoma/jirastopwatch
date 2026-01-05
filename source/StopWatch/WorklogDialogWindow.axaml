@@ -63,9 +63,9 @@
         <!-- Usunięto powielone pole wyboru daty/godziny -->
 
         <StackPanel Grid.Row="7" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,20" Spacing="18">
-            <Button x:Name="btnSave" Width="160" Height="38" Click="BtnSave_OnClick" Content="💾 Zapisz na później"/>
-            <Button x:Name="btnOk" Width="130" Height="38" Click="BtnOk_OnClick" Content="📤 Wyślij"/>
-            <Button x:Name="btnCancel" Width="130" Height="38" Click="BtnCancel_OnClick" Content="❌ Anuluj"/>
+            <Button x:Name="btnSave" Width="160" Height="38" Click="BtnSave_OnClick" Content="💾 Zapisz na później" ToolTip.Tip="Zapisz na później"/>
+            <Button x:Name="btnOk" Width="130" Height="38" Click="BtnOk_OnClick" Content="📤 Wyślij" ToolTip.Tip="Wyślij do JIRA"/>
+            <Button x:Name="btnCancel" Width="130" Height="38" Click="BtnCancel_OnClick" Content="❌ Anuluj" ToolTip.Tip="Anuluj i zamknij"/>
         </StackPanel>
     </Grid>
 </Window>

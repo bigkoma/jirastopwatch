@@ -6,6 +6,7 @@ namespace StopWatch;
 
 public partial class WorklogDialogWindow : Window
 {
+
     // Czyści pole komentarza (do wywołania po sukcesie z MainWindow)
     public void ClearCommentBox()
     {
@@ -75,6 +76,7 @@ public partial class WorklogDialogWindow : Window
         btnSave.Content = Localization.Localizer.T("Worklog_SaveForLater");
         btnOk.Content = Localization.Localizer.T("Worklog_Submit");
         btnCancel.Content = Localization.Localizer.T("Worklog_Cancel");
+
     }
 
     private void Estimate_Checked(object sender, RoutedEventArgs e)
