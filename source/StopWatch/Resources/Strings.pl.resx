@@ -146,4 +146,10 @@ Aby uzyskać więcej pomocy, odwiedź dokumentację.</value></data>
   <data name="Msg_TransitionSuccess" xml:space="preserve"><value>Zgłoszenie {0} zostało pomyślnie przejściowane do '{1}'.</value></data>
   <data name="Msg_TransitionFailed" xml:space="preserve"><value>Nie udało się przejściować zgłoszenia. Spróbuj ponownie.</value></data>
   <data name="Btn_RestartNow" xml:space="preserve"><value>Uruchom ponownie</value></data>
+  <data name="Tooltip_OpenInBrowser" xml:space="preserve"><value>Otwórz w przeglądarce</value></data>
+  <data name="Tooltip_Reset" xml:space="preserve"><value>Resetuj timer</value></data>
+  <data name="Tooltip_LogWork" xml:space="preserve"><value>Wyślij worklog</value></data>
+  <data name="Tooltip_Delete" xml:space="preserve"><value>Usuń z listy</value></data>
+  <data name="Tooltip_AddLocal" xml:space="preserve"><value>Dodaj do listy lokalnej</value></data>
+  <data name="Tooltip_MarkDone" xml:space="preserve"><value>Oznacz jako zakończone</value></data>
 </root>

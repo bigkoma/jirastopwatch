@@ -223,6 +223,13 @@ public partial class IssueControl : UserControl
 
         // Wire add/remove handler
         btnRemove.Click += BtnAddRemove_Click;
+
+        // Ustaw lokalizowane tooltippy
+        ToolTip.SetTip(btnOpenBrowser, Localization.Localizer.T("Tooltip_OpenInBrowser"));
+        ToolTip.SetTip(btnReset, Localization.Localizer.T("Tooltip_Reset"));
+        ToolTip.SetTip(btnLogWork, Localization.Localizer.T("Tooltip_LogWork"));
+        ToolTip.SetTip(btnRemove, Localization.Localizer.T("Tooltip_Delete"));
+        ToolTip.SetTip(btnTransition, Localization.Localizer.T("Tooltip_MarkDone"));
     }
 
     public void SetAddRemoveMode(bool isLocal)
