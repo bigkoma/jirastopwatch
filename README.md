@@ -1,7 +1,7 @@
 ## Jira StopWatch by Komasa (v3.0)
 
 Language • Język: [English](#english) | [Polski](#polski)
-
+Binary files (Windows, MacOS, Linux): https://github.com/bigkoma/jirastopwatch/tree/master/dist
 ---
 
 ## English
