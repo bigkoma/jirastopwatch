@@ -3,6 +3,8 @@
 Language • Język: [English](#english) | [Polski](#polski)
 
 Binary files (Windows, MacOS, Linux): https://github.com/bigkoma/jirastopwatch/tree/master/dist
+
+By me coffee: https://buymeacoffee.com/komasa
 ---
 
 ## English
@@ -76,6 +78,9 @@ Artifacts location: source/StopWatch/bin/Release/{tfm}/{rid}/publish
 Thanks to Carsten Gehling and the community of the original “Jira StopWatch” the project historically builds upon. The project remains open‑source (Apache 2.0).
 
 ---
+Pliki binarne (Windows, MacOS, Linux): https://github.com/bigkoma/jirastopwatch/tree/master/dist
+
+Postaw mi kawę: https://buymeacoffee.com/komasa
 
 ## Polski
 
