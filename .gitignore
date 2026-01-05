@@ -217,3 +217,5 @@ FakesAssemblies/
 _Pvt_Extensions
 
 .fake
+dist/.DS_Store
+dist/.DS_Store

@@ -505,10 +505,8 @@ public partial class MainWindow : Window
 
     private void AddPseudoFilters()
     {
-        var all = new FilterItem { Id = 0, Name = Localization.Localizer.T("Filter_All"), Jql = "" };
-        var local = new FilterItem { Id = -1, Name = Localization.Localizer.T("Filter_Local"), Jql = "#LOCAL" };
-        var running = new FilterItem { Id = -2, Name = Localization.Localizer.T("Filter_Running"), Jql = "#RUNNING" };
-        filters.Add(all);
+        var local = new FilterItem { Id = -1, Name = Localization.Localizer.T("Local"), Jql = "#LOCAL" };
+        var running = new FilterItem { Id = -2, Name = Localization.Localizer.T("Running"), Jql = "#RUNNING" };
         filters.Add(local);
         filters.Add(running);
     }

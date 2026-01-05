@@ -46,6 +46,8 @@
   <data name="Issue_Comment" xml:space="preserve"><value>Komentarz</value></data>
   <data name="Btn_Log" xml:space="preserve"><value>Wyślij</value></data>
   <data name="Btn_Done" xml:space="preserve"><value>Zakończone</value></data>
+  <data name="Local" xml:space="preserve"><value>Lokalna lista</value></data>
+  <data name="Running" xml:space="preserve"><value>W trakcie</value></data>
   <data name="Filter_All" xml:space="preserve"><value>Wszystkie zgłoszenia</value></data>
   <data name="Filter_Mine" xml:space="preserve"><value>Moje zadania</value></data>
   <data name="Filter_Recent" xml:space="preserve"><value>Ostatnie</value></data>
