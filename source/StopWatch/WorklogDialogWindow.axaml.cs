@@ -6,6 +6,11 @@ namespace StopWatch;
 
 public partial class WorklogDialogWindow : Window
 {
+    // Czyści pole komentarza (do wywołania po sukcesie z MainWindow)
+    public void ClearCommentBox()
+    {
+        tbComment.Text = string.Empty;
+    }
     public WorklogDialogWindow()
     {
         InitializeComponent();
@@ -103,6 +108,7 @@ public partial class WorklogDialogWindow : Window
     private void BtnOk_OnClick(object sender, RoutedEventArgs e)
     {
         if (!ValidateEstimateInputs()) return;
+        // Nie czyść pola komentarza tutaj — pozwól przekazać do backendu
         Close(true);
     }
 

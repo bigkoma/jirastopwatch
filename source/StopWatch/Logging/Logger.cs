@@ -50,6 +50,9 @@ namespace StopWatch.Logging
             if (exception != null)
                 line += string.Format("\n{0}", exception.StackTrace);
 
+            // Wypisz do konsoli (Output)
+            Console.WriteLine(line);
+
             if (Monitor.TryEnter(syncObj, new TimeSpan(0, 0, 1)))
             {
                 try

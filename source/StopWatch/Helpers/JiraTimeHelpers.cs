@@ -25,8 +25,11 @@ namespace StopWatch
 
         public static string DateTimeToJiraDateTime(DateTimeOffset date)
         {
-            string formatted = date.ToString("yyyy-MM-dd\\THH:mm:ss.fffzzzz", CultureInfo.InvariantCulture);
-            return formatted.Substring(0, formatted.Length - 3) + formatted.Substring(formatted.Length - 2);
+            // Format wymagany przez JIRA Cloud: yyyy-MM-dd'T'HH:mm:ss.SSSZ (np. 2026-01-05T13:09:26.547+0000)
+            // Musi być zawsze +0000, bez Z, bez kodowania Unicode
+            var utc = date.ToUniversalTime();
+            string formatted = utc.ToString("yyyy-MM-dd'T'HH:mm:ss.fff", CultureInfo.InvariantCulture) + "+0000";
+            return formatted;
         }
 
         public static string TimeSpanToJiraTime(TimeSpan ts)

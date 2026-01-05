@@ -15,6 +15,7 @@ limitations under the License.
 **************************************************************************/
 using RestSharp;
 using System;
+using Newtonsoft.Json;
 
 namespace StopWatch
 {
@@ -73,15 +74,49 @@ namespace StopWatch
 
         public RestRequest CreatePostWorklogRequest(string key, DateTimeOffset started, TimeSpan time, string comment, EstimateUpdateMethods adjustmentMethod, string adjustmentValue)
         {
+            // Zapobiegaj null w komentarzu (JIRA API nie akceptuje null)
             var request = restRequestFactory.Create(String.Format("/rest/api/3/issue/{0}/worklog", key.Trim()), Method.Post);
             request.RequestFormat = DataFormat.Json;
-            request.AddBody(new
+            object bodyObj;
+            if (!string.IsNullOrWhiteSpace(comment) && comment.Trim().Length > 0)
+            {
+                bodyObj = new
                 {
                     timeSpent = JiraTimeHelpers.TimeSpanToJiraTime(time),
                     started = JiraTimeHelpers.DateTimeToJiraDateTime(started),
-                    comment = comment
-                }
-            );
+                    comment = new {
+                        type = "doc",
+                        version = 1,
+                        content = new[] {
+                            new {
+                                type = "paragraph",
+                                content = new[] {
+                                    new {
+                                        type = "text",
+                                        text = comment
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+            }
+            else
+            {
+                bodyObj = new
+                {
+                    timeSpent = JiraTimeHelpers.TimeSpanToJiraTime(time),
+                    started = JiraTimeHelpers.DateTimeToJiraDateTime(started)
+                };
+            }
+            // Loguj i serializuj JSON przez Newtonsoft.Json, aby nie kodować '+' jako \u002B
+            try {
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(bodyObj);
+                Logging.Logger.Instance.Log($"Worklog JSON: {json}");
+                request.AddParameter("application/json", json, ParameterType.RequestBody);
+            } catch {
+                request.AddBody(bodyObj);
+            }
             switch(adjustmentMethod) {
                 case EstimateUpdateMethods.Leave:
                     request.AddQueryParameter("adjustEstimate", "leave");

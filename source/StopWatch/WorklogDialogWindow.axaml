@@ -2,8 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="StopWatch.WorklogDialogWindow"
         Title="Post Worklog"
-        Width="360"
-        Height="480"
+        Width="480"
+        Height="600"
         WindowStartupLocation="CenterOwner"
         CanResize="False">
     <Grid Margin="12">
@@ -13,7 +13,9 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
@@ -22,13 +24,26 @@
         <TextBlock Grid.Row="1" x:Name="txtAddComment" Text="Add a comment (optional)"/>
         <TextBox Grid.Row="2" x:Name="tbComment" AcceptsReturn="True" Height="120" TextWrapping="Wrap"/>
 
+
         <!-- Time spent -->
         <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="6" Margin="0,8,0,0">
-            <TextBlock x:Name="txtTimeSpent" Text="Time spent:" VerticalAlignment="Center"/>
+            <TextBlock x:Name="txtTimeSpent" Text="Czas pracy:" VerticalAlignment="Center"/>
             <TextBox x:Name="tbTimeSpent" Width="120" ToolTip.Tip="Jira format e.g. 2m, 1h 30m"/>
         </StackPanel>
 
-        <Border Grid.Row="4" Margin="0,10,0,0" BorderBrush="Gray" BorderThickness="1" Padding="8">
+        <!-- Start date/time -->
+        <StackPanel Grid.Row="4" Orientation="Vertical" Spacing="10" Margin="0,12,0,0">
+            <StackPanel Orientation="Horizontal" Spacing="16">
+                <TextBlock x:Name="txtStartDate" Text="Data rozpoczęcia:" VerticalAlignment="Center" FontSize="15"/>
+                <DatePicker x:Name="startDatePicker" FontSize="16" Padding="2,2" Width="300" MinWidth="160"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="16">
+                <TextBlock x:Name="txtStartTime" Text="Godzina rozpoczęcia:" VerticalAlignment="Center" FontSize="15"/>
+                <TimePicker x:Name="startTimePicker" FontSize="16" Padding="2,2" Width="250" MinWidth="120"/>
+            </StackPanel>
+        </StackPanel>
+
+        <Border Grid.Row="5" Margin="0,10,0,0" BorderBrush="Gray" BorderThickness="1" Padding="8">
             <StackPanel Spacing="6">
                 <TextBlock x:Name="txtRemainingHeader" Text="Remaining Estimate" FontWeight="Bold"/>
                 <RadioButton x:Name="rdAuto" Content="Adjust Automatically" IsChecked="True" Checked="Estimate_Checked" GroupName="EstimateGroup"/>
@@ -45,17 +60,12 @@
             </StackPanel>
         </Border>
 
-        <StackPanel Grid.Row="5" Orientation="Horizontal" Spacing="6" Margin="0,10,0,0">
-            <TextBlock x:Name="txtStartDate" Text="Start date:" VerticalAlignment="Center"/>
-            <DatePicker x:Name="startDatePicker" FontSize="14"/>
-            <TextBlock x:Name="txtStartTime" Text="Start time:" VerticalAlignment="Center"/>
-            <TimePicker x:Name="startTimePicker" FontSize="14"/>
-        </StackPanel>
+        <!-- Usunięto powielone pole wyboru daty/godziny -->
 
-        <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,12">
-            <Button x:Name="btnSave" Content="Save for later" Width="110" Margin="0,0,10,0" Click="BtnSave_OnClick"/>
-            <Button x:Name="btnOk" Content="Submit" Width="90" Margin="0,0,10,0" Click="BtnOk_OnClick"/>
-            <Button x:Name="btnCancel" Content="Cancel" Width="90" Click="BtnCancel_OnClick"/>
+        <StackPanel Grid.Row="7" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,20" Spacing="18">
+            <Button x:Name="btnSave" Width="160" Height="38" Click="BtnSave_OnClick" Content="💾 Zapisz na później"/>
+            <Button x:Name="btnOk" Width="130" Height="38" Click="BtnOk_OnClick" Content="📤 Wyślij"/>
+            <Button x:Name="btnCancel" Width="130" Height="38" Click="BtnCancel_OnClick" Content="❌ Anuluj"/>
         </StackPanel>
     </Grid>
 </Window>

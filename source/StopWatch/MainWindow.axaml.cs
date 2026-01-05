@@ -1308,12 +1308,8 @@ public partial class MainWindow : Window
             {
                 // Update local comment to last used
                 issue.Comment = dlg.Comment;
-                // Optional post comment alone
-                if (Settings.Instance.PostWorklogComment == WorklogCommentSetting.CommentOnly)
-                {
-                    jiraClient.PostComment(key, dlg.Comment);
-                }
-                else if (Settings.Instance.PostWorklogComment == WorklogCommentSetting.WorklogAndComment)
+                // Jeśli wybrano WorklogAndComment, wyślij komentarz także jako osobny komentarz
+                if (Settings.Instance.PostWorklogComment == WorklogCommentSetting.WorklogAndComment && !string.IsNullOrWhiteSpace(dlg.Comment))
                 {
                     jiraClient.PostComment(key, dlg.Comment);
                 }
@@ -1324,6 +1320,9 @@ public partial class MainWindow : Window
                 issue.Time = "00:00:00";
                 UpdateIssueDisplayTime(issue.Key, TimeSpan.Zero);
                 SaveIssues();
+
+                // Wyczyść komentarz w modelu, by przy kolejnym otwarciu okna pole było puste
+                issue.Comment = string.Empty;
             }
             else
             {
