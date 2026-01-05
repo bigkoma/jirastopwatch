@@ -113,7 +113,7 @@ namespace StopWatch
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(260, 100);
             this.textBox1.TabIndex = 6;
-            this.textBox1.Text = "Copyright 2015 Carsten Gehling\r\n\r\nContact me at: carsten@sarum.dk\r\n\r\nLicensed und" +
+            this.textBox1.Text = "Copyright 2026 Michał Komasa\r\n\r\nContact me at: carsten@sarum.dk\r\n\r\nLicensed und" +
     "er the Apache License, Version 2.0. This software is free to use under the terms" +
     " specified in the license.";
             this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;

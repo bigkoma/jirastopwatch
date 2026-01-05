@@ -159,6 +159,7 @@ public partial class MainWindow : Window
 
         // Initial status update
         UpdateConnectionStatus();
+        this.Title = $"{Tools.GetProductName()} v. {Tools.GetProductVersion()}";
     }
 
     private void ApplyLocalization()

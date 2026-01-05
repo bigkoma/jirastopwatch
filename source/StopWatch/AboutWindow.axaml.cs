@@ -10,7 +10,7 @@ public partial class AboutWindow : Window
     {
         InitializeComponent();
         ApplyLocalization();
-        lblNameVersion.Text = $"{GetProductName()} v. {GetProductVersion()}";
+        lblNameVersion.Text = $"{Tools.GetProductName()} v. {Tools.GetProductVersion()}";
         try
         {
             var authorBlock = this.FindControl<TextBlock>("AuthorBlock");
@@ -25,7 +25,7 @@ public partial class AboutWindow : Window
         try
         {
             Title = Localization.Localizer.T("About_Title");
-            lblNameVersion.Text = $"{Localization.Localizer.T("About_ProductName")} v. {GetProductVersion()}";
+            lblNameVersion.Text = $"{Localization.Localizer.T("About_ProductName")} v. {Tools.GetProductVersion()}";
             var authorBlock = this.FindControl<TextBlock>("AuthorBlock");
             if (authorBlock != null) authorBlock.Text = Localization.Localizer.T("About_Author");
             
@@ -53,7 +53,6 @@ public partial class AboutWindow : Window
     {
         Close();
     }
-
     private void License_Tapped(object sender, Avalonia.Input.TappedEventArgs e)
     {
         CrossPlatformHelpers.OpenUrl("http://www.apache.org/licenses/LICENSE-2.0");
@@ -61,23 +60,6 @@ public partial class AboutWindow : Window
 
     private void Homepage_Tapped(object sender, Avalonia.Input.TappedEventArgs e)
     {
-        CrossPlatformHelpers.OpenUrl("http://jirastopwatch.com");
-    }
-
-    private static string GetProductName()
-    {
-        return "Jira StopWatch by Komasa";
-    }
-
-    private static string GetProductVersion()
-    {
-        try
-        {
-            return typeof(AboutWindow).Assembly.GetName().Version?.ToString() ?? "";
-        }
-        catch
-        {
-            return "";
-        }
-    }
+        CrossPlatformHelpers.OpenUrl("https://github.com/bigkoma/jirastopwatch");
+    } 
 }

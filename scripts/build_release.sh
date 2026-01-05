@@ -10,6 +10,7 @@ PROJECT="$ROOT_DIR/source/StopWatch/StopWatch.csproj"
 TFM="net10.0"
 DIST_DIR="$ROOT_DIR/dist"
 ICONS_DIR="$ROOT_DIR/source/StopWatch/icons"
+MAC_ZIP="$DIST_DIR/JiraStopWatchByKomasa_MacOS.zip"
 
 # Common publish options for single-file, self-contained apps
 PUBLISH_OPTS=(
@@ -91,6 +92,17 @@ if [[ -d "$MAC_APP_SRC" ]]; then
 else
   echo "   !! .app bundle not found in $OSX_PUB" >&2
 fi
+
+# Utwórz archiwum ZIP z aplikacją .app
+rm -f "$MAC_ZIP"
+if command -v ditto >/dev/null 2>&1; then
+  # Użycie narzędzia ditto zachowuje metadane i strukturę folderu [oai_citation:1‡christarnowski.com](https://christarnowski.com/making-notarization-work-on-macos-for-electron-apps-built-with-electron-builder/#:~:text=One%20way%20of%20getting%20around,to%20mimic%20Finder%E2%80%99s%20behavior%2C%20are).
+  ditto -c -k --sequesterRsrc --keepParent "$MAC_APP_DST" "$MAC_ZIP"
+else
+  # Fallback na zip, jeśli ditto nie jest dostępne (bez zachowania wszystkich metadanych)
+  (cd "$DIST_DIR" && zip -r -y "$(basename "$MAC_ZIP")" "$(basename "$MAC_APP_DST")")
+fi
+echo "   -> $MAC_ZIP"
 
 # Windows x64
 RID_WIN="win-x64"

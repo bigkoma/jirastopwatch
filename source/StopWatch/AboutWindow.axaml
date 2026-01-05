@@ -31,7 +31,7 @@
                    Grid.Row="2"
                    TextAlignment="Center"
                    Margin="0,8,0,8">
-            <Run Text="Copyright 2016 Carsten Gehling"/>
+            <Run Text="Copyright 2026 Michał Komasa"/>
             <LineBreak/>
             <Run Text="Licensed under the Apache License, Version 2.0."/>
         </TextBlock>
