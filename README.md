@@ -9,7 +9,7 @@ By me coffee: https://buymeacoffee.com/komasa
 ---
 ### Screenshots
 
-<div style="display: flex; gap: 8px;">
+<div style="display: flex; gap: 8px; justify-content: center; text-align: center;">
   <div style="flex:1;">
     <div>Windows</div>
     <img src="screens/windows.png" alt="Windows" width="25%" />
