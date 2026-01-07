@@ -9,23 +9,26 @@ By me coffee: https://buymeacoffee.com/komasa
 ---
 ### Screenshots
 
-<div style="display: flex; gap: 8px; justify-content: center; text-align: center;">
-  <div style="flex:1;">
+<div style="display:flex; gap:16px; justify-content:center;">
+  <div style="flex:1; text-align:center;">
     <div>Windows</div>
-    <img src="screens/windows.png" alt="Windows" width="25%" />
+    <img src="screens/windows.png" alt="Windows" style="max-width:80px; width:100%;" />
   </div>
-  <div style="flex:1;">
+
+  <div style="flex:1; text-align:center;">
     <div>macOS</div>
-    <img src="screens/macos.png" alt="macOS" width="25%" />
+    <img src="screens/macos.png" alt="macOS" style="max-width:80px; width:100%;" />
   </div>
-  <div style="flex:1;">
+
+  <div style="flex:1; text-align:center;">
     <div>Linux</div>
-    <img src="screens/linux.png" alt="Linux" width="25%" />
+    <img src="screens/linux.png" alt="Linux" style="max-width:80px; width:100%;" />
   </div>
 </div>
-<div style="text-align:center; margin-top:8px;">
+
+<div style="text-align:center; margin-top:16px;">
   <div>Settings</div>
-  <img src="screens/settings.png" alt="Settings" width="25%" />
+  <img src="screens/settings.png" alt="Settings" style="max-width:80px; width:100%;" />
 </div>
 
 ---
