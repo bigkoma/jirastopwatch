@@ -10,11 +10,23 @@ By me coffee: https://buymeacoffee.com/komasa
 ### Screenshots
 
 <div style="display: flex; gap: 8px;">
-  <img src="screens/windows.png" alt="Windows" width="25%" />
-  <img src="screens/macos.png" alt="macOS" width="25%" />
-  <img src="screens/linux.png" alt="Linux" width="25%" />
+  <div style="flex:1;">
+    <div>Windows</div>
+    <img src="screens/windows.png" alt="Windows" width="100%" />
+  </div>
+  <div style="flex:1;">
+    <div>macOS</div>
+    <img src="screens/macos.png" alt="macOS" width="100%" />
+  </div>
+  <div style="flex:1;">
+    <div>Linux</div>
+    <img src="screens/linux.png" alt="Linux" width="100%" />
+  </div>
 </div>
-<img src="screens/settings.png" alt="Settings" width="25%" />
+<div style="text-align:center; margin-top:8px;">
+  <div>Settings</div>
+  <img src="screens/settings.png" alt="Settings" width="33%" />
+</div>
 
 ---
 
