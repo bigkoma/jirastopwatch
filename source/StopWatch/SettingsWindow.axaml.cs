@@ -122,9 +122,28 @@ public partial class SettingsWindow : Window
 
     private void BtnOK_Click(object sender, RoutedEventArgs e)
     {
-        settings.JiraBaseUrl = tbJiraBaseUrl.Text;
-        settings.Username = tbUsername.Text;
-        settings.ApiToken = tbApiToken.Text;
+        // Zapamiętaj stare wartości krytycznych ustawień
+        string oldLanguageCode = settings.LanguageCode;
+        string oldJiraBaseUrl = settings.JiraBaseUrl;
+        string oldUsername = settings.Username;
+        string oldApiToken = settings.ApiToken;
+
+        // Ustaw nowe wartości
+        string newJiraBaseUrl = tbJiraBaseUrl.Text;
+        string newUsername = tbUsername.Text;
+        string newApiToken = tbApiToken.Text;
+        string newLanguageCode = "";
+        switch (cbLanguage.SelectedIndex)
+        {
+            case 0: newLanguageCode = ""; break; // System default
+            case 1: newLanguageCode = "en"; break; // English
+            case 2: newLanguageCode = "pl"; break; // Polish
+            default: newLanguageCode = ""; break;
+        }
+
+        settings.JiraBaseUrl = newJiraBaseUrl;
+        settings.Username = newUsername;
+        settings.ApiToken = newApiToken;
         settings.AlwaysOnTop = cbAlwaysOnTop.IsChecked ?? false;
         settings.MinimizeToTray = true;
         settings.AllowMultipleTimers = cbAllowMultipleTimers.IsChecked ?? false;
@@ -137,25 +156,17 @@ public partial class SettingsWindow : Window
         settings.SaveTimerState = (SaveTimerSetting)(cbSaveTimerState.SelectedIndex >= 0 ? cbSaveTimerState.SelectedIndex : 0);
         settings.PauseOnSessionLock = (PauseAndResumeSetting)(cbPauseOnSessionLock.SelectedIndex >= 0 ? cbPauseOnSessionLock.SelectedIndex : 0);
         settings.PostWorklogComment = (WorklogCommentSetting)(cbPostWorklogComment.SelectedIndex >= 0 ? cbPostWorklogComment.SelectedIndex : 0);
-        
-        // Save language setting
-        string oldLanguageCode = settings.LanguageCode;
-        switch (cbLanguage.SelectedIndex)
-        {
-            case 0: settings.LanguageCode = ""; break; // System default
-            case 1: settings.LanguageCode = "en"; break; // English
-            case 2: settings.LanguageCode = "pl"; break; // Polish
-            default: settings.LanguageCode = ""; break;
-        }
-        
-        // Check if language changed
-        bool languageChanged = oldLanguageCode != settings.LanguageCode;
-        
+        settings.LanguageCode = newLanguageCode;
+
+        // Sprawdź, czy nastąpiła zmiana krytycznych ustawień
+        bool languageChanged = oldLanguageCode != newLanguageCode;
+        bool jiraChanged = oldJiraBaseUrl != newJiraBaseUrl || oldUsername != newUsername || oldApiToken != newApiToken;
+
         settings.Save();
-        
-        if (languageChanged)
+
+        if (languageChanged || jiraChanged)
         {
-            // Show message that app needs restart with option to restart now
+            // Pokaż komunikat o konieczności restartu
             var messageBox = new Window
             {
                 Title = Localization.Localizer.T("Msg_Title_Info"),
@@ -202,20 +213,22 @@ public partial class SettingsWindow : Window
             {
                 var restartButton = buttonPanel.Children[0] as Button;
                 var okButton = buttonPanel.Children[1] as Button;
-                
-                restartButton.Click += (s, args) => 
+
+                restartButton.Click += (s, args) =>
                 {
                     messageBox.Close();
                     RestartApplication();
                 };
-                
+
                 okButton.Click += (s, args) => messageBox.Close();
             }
 
             messageBox.ShowDialog(this);
         }
-        
-        Close();
+        else
+        {
+            Close();
+        }
     }
 
     private void BtnCancel_Click(object sender, RoutedEventArgs e)

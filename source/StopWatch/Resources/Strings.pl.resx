@@ -138,9 +138,9 @@ Aby uzyskać więcej pomocy, odwiedź dokumentację.</value></data>
   <data name="Language_Polish" xml:space="preserve"><value>Polski</value></data>
 
   <!-- Komunikaty -->
-  <data name="Msg_LanguageRestart" xml:space="preserve"><value>Zmiana języka zostanie zastosowana po ponownym uruchomieniu aplikacji.</value></data>
-  <data name="Msg_RestartFailed" xml:space="preserve"><value>Nie udało się ponownie uruchomić aplikacji. Uruchom ponownie ręcznie.</value></data>
-  <data name="Msg_NoTransitions" xml:space="preserve"><value>Brak dostępnych przejść dla tego zgłoszenia.</value></data>
+  <data name="Msg_LanguageRestart" xml:space="preserve"><value>Zmiany zostaną zastowane po ponownym uruchomieniu aplikacji.</value></data>
+    <data name="Msg_RestartFailed" xml:space="preserve"><value>Nie udało się ponownie uruchomić aplikacji. Uruchom ponownie ręcznie.</value></data>
+    <data name="Msg_NoTransitions" xml:space="preserve"><value>Brak dostępnych przejść dla tego zgłoszenia.</value></data>
   <data name="Msg_NoDoneTransition" xml:space="preserve"><value>Nie znaleziono przejścia 'Zakończone'. Dostępne przejścia: {0}</value></data>
   <data name="Msg_Title_Success" xml:space="preserve"><value>Sukces</value></data>
   <data name="Msg_TransitionSuccess" xml:space="preserve"><value>Zgłoszenie {0} zostało pomyślnie przejściowane do '{1}'.</value></data>

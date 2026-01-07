@@ -142,7 +142,7 @@ For more help, visit the documentation.</value></data>
   <data name="Language_Polish" xml:space="preserve"><value>Polski</value></data>
 
   <!-- Messages -->
-  <data name="Msg_LanguageRestart" xml:space="preserve"><value>Language change will take effect after restarting the application.</value></data>
+  <data name="Msg_LanguageRestart" xml:space="preserve"><value>Change will take effect after restarting the application.</value></data>
   <data name="Msg_RestartFailed" xml:space="preserve"><value>Failed to restart application. Please restart manually.</value></data>
   <data name="Msg_NoTransitions" xml:space="preserve"><value>No transitions available for this issue.</value></data>
   <data name="Msg_NoDoneTransition" xml:space="preserve"><value>No 'Done' transition found. Available transitions: {0}</value></data>
