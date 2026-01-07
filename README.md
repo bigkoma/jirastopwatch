@@ -14,6 +14,11 @@ By me coffee: https://buymeacoffee.com/komasa
 ![Linux](screens/linux.png)
 ![Settings](screens/settings.png)
 
+<img src="screens/windows.png" alt="Windows" width="33%" />
+<img src="screens/macos.png" alt="macOS" width="33%" />
+<img src="screens/linux.png" alt="Linux" width="33%" />
+<img src="screens/settings.png" alt="Settings" width="33%" />
+
 ---
 
 ## English
