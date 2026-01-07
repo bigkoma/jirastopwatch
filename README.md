@@ -5,6 +5,15 @@ Language • Język: [English](#english) | [Polski](#polski)
 Binary files (Windows, MacOS, Linux): https://github.com/bigkoma/jirastopwatch/tree/master/dist
 
 By me coffee: https://buymeacoffee.com/komasa
+
+---
+### Screenshots
+
+![Windows](screens/windows.png)
+![macOS](screens/macos.png)
+![Linux](screens/linux.png)
+![Settings](screens/settings.png)
+
 ---
 
 ## English

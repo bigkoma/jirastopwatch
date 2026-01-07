@@ -237,7 +237,11 @@ public partial class SettingsWindow : Window
 
     private async void BtnAbout_Click(object sender, RoutedEventArgs e)
     {
-        var aboutWindow = new AboutWindow();
+        var aboutWindow = new AboutWindow
+        {
+            Topmost = true,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner
+        };
         await aboutWindow.ShowDialog(this);
     }
 

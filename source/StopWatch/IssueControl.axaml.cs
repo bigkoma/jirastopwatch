@@ -219,7 +219,7 @@ public partial class IssueControl : UserControl
         }
         catch { btnRemove.Content = "X"; }
         // Done/status mark as check emoji (smaller to avoid clipping)
-        btnTransition.Content = new TextBlock { Text = "✅", FontSize = 14, HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center };
+        btnTransition.Content = new TextBlock { Text = " ✅ ", FontSize = 14, HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center };
 
         // Wire add/remove handler
         btnRemove.Click += BtnAddRemove_Click;

@@ -3,7 +3,7 @@
              x:Class="StopWatch.IssueControl">
     <Border Padding="6" Margin="0,2" BorderBrush="LightGray" BorderThickness="0,0,0,1">
           <Grid RowDefinitions="Auto,Auto"
-              ColumnDefinitions="180,28,28,80,28,28,28,28,*">
+              ColumnDefinitions="180,28,28,80,28,28,28,30,*">
             <!-- ROW 0: Key + all actions -->
             <TextBox x:Name="tbIssueKey" Grid.Row="0" Grid.Column="0" FontSize="14" Margin="0,0,6,0"/>
             <Button x:Name="btnOpenBrowser" Grid.Row="0" Grid.Column="1" Width="28" Height="28" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="OpenInBrowser_Click">
@@ -19,7 +19,7 @@
             </Button>
             <Button x:Name="btnLogWork" Grid.Row="0" Grid.Column="5" Width="28" Height="28" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="BtnLogWork_Click"/>
             <Button x:Name="btnRemove" Grid.Row="0" Grid.Column="6" Width="28" Height="28" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-            <Button x:Name="btnTransition" Grid.Row="0" Grid.Column="7" Width="28" Height="28" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="BtnTransition_Click"/>
+            <Button x:Name="btnTransition" Grid.Row="0" Grid.Column="7" Width="30" Height="28" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="BtnTransition_Click"/>
 
             <!-- ROW 1: Summary only (full width) -->
             <TextBlock x:Name="lblSummary" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="9"
