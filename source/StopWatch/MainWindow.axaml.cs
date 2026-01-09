@@ -595,10 +595,19 @@ public partial class MainWindow : Window
         var issue = issues.FirstOrDefault(i => i.Key == issueKey);
         if (issue != null)
         {
+            // Preserve running state: if it was running, continue running from zero
+            var wasRunning = issue.IsRunning;
             issue.Timer.Reset();
-            issue.IsRunning = false;
+            issue.IsRunning = wasRunning;
             issue.Time = "00:00:00";
             UpdateIssueDisplayTime(issue.Key, TimeSpan.Zero);
+            // Update UI start/stop icon for this issue control
+            var border = issuesPanel.Children.OfType<Border>()
+                .FirstOrDefault(b => (b.Child as IssueControl)?.Issue.Key == issueKey);
+            if (border?.Child is IssueControl ic)
+            {
+                try { ic.UpdateStartStopButton(issue.IsRunning); } catch { }
+            }
             SaveIssues();
         }
     }
@@ -1298,6 +1307,13 @@ public partial class MainWindow : Window
             issue.Comment = dlg.Comment; // keep edited comment
             issue.Time = timeToKeep.ToString(@"hh\:mm\:ss");
             UpdateIssueDisplayTime(issue.Key, timeToKeep);
+            // Update UI start/stop icon to reflect paused state
+            var borderSave = issuesPanel.Children.OfType<Border>()
+                .FirstOrDefault(b => (b.Child as IssueControl)?.Issue.Key == issue.Key);
+            if (borderSave?.Child is IssueControl icSave)
+            {
+                try { icSave.UpdateStartStopButton(false); } catch { }
+            }
             SaveIssues();
             return;
         }
@@ -1321,6 +1337,13 @@ public partial class MainWindow : Window
                 issue.IsRunning = false;
                 issue.Time = "00:00:00";
                 UpdateIssueDisplayTime(issue.Key, TimeSpan.Zero);
+                // Update UI start/stop icon to reflect stopped state
+                var borderReset = issuesPanel.Children.OfType<Border>()
+                    .FirstOrDefault(b => (b.Child as IssueControl)?.Issue.Key == issue.Key);
+                if (borderReset?.Child is IssueControl icReset)
+                {
+                    try { icReset.UpdateStartStopButton(false); } catch { }
+                }
                 SaveIssues();
 
                 // Wyczyść komentarz w modelu, by przy kolejnym otwarciu okna pole było puste

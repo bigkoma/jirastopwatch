@@ -95,9 +95,21 @@ namespace StopWatch
 
         public void Reset()
         {
+            // Reset accumulated time
             totalTime = new TimeSpan();
-            Running = false;
-            initialStartTime = null;
+            // If the timer was running, keep it running but restart the session from now
+            if (Running)
+            {
+                sessionStartTime = DateTime.Now;
+                // Treat this as a new initial start time for logging
+                initialStartTime = DateTimeOffset.UtcNow;
+            }
+            else
+            {
+                // Fully reset initial start time when timer is stopped
+                initialStartTime = null;
+                sessionStartTime = DateTime.Now;
+            }
         }
 
 
