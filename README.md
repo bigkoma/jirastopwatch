@@ -1,4 +1,4 @@
-## Jira StopWatch by Komasa (v3.0)
+## Jira StopWatch by Komasa (v3.0.1)
 
 Language • Język: [English](#english) | [Polski](#polski)
 
