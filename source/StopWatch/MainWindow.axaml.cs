@@ -45,9 +45,12 @@ public partial class MainWindow : Window
     private RestClientFactory restClientFactory;
     private JiraClient jiraClient;
     private TrayIcon _trayIcon;
+    private NativeMenuItem _trayShowItem;
+    private NativeMenuItem _trayExitItem;
     private bool _trayWarningShown;
     private bool _trayHandlingEnabled;
     private bool _localFilterContext;
+    private bool _resourcesDisposed;
 
     public MainWindow()
     {
@@ -108,26 +111,7 @@ public partial class MainWindow : Window
         // Initialize tray icon if enabled
         InitializeTrayIcon();
         // Hide to tray on minimize if enabled
-        this.PropertyChanged += (s, e) =>
-        {
-            if (!_trayHandlingEnabled) return;
-            if (Settings.Instance.MinimizeToTray && e.Property == Window.WindowStateProperty && WindowState == WindowState.Minimized)
-            {
-                if (EnsureTrayOrWarn())
-                {
-                    // On macOS keep window minimized (Hide/Show can behave oddly)
-                    if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                    {
-                        WindowState = WindowState.Minimized;
-                    }
-                    else
-                    {
-                        Hide();
-                        if (_trayIcon != null) _trayIcon.IsVisible = true;
-                    }
-                }
-            }
-        };
+        PropertyChanged += MainWindow_PropertyChanged;
 
         // Note: PropertyChanged hook above handles minimize-to-tray across platforms
 
@@ -150,16 +134,35 @@ public partial class MainWindow : Window
         cbFilters.SelectionChanged += CbFilters_SelectionChanged;
 
         // Menu handlers
-        menuSettings.Click += async (s, e) => await OpenSettingsAsync();
-        menuAbout.Click += MenuAbout_Click;
-        menuExit.Click += MenuExit_Click;
-
         // Save on close
         Closed += MainWindow_Closed;
 
         // Initial status update
         UpdateConnectionStatus();
         this.Title = $"{Tools.GetProductName()} v. {Tools.GetProductVersion()}";
+    }
+
+    private void MainWindow_PropertyChanged(object sender, AvaloniaPropertyChangedEventArgs e)
+    {
+        if (_resourcesDisposed || !_trayHandlingEnabled)
+            return;
+
+        if (Settings.Instance.MinimizeToTray && e.Property == Window.WindowStateProperty && WindowState == WindowState.Minimized)
+        {
+            if (EnsureTrayOrWarn())
+            {
+                // On macOS keep window minimized (Hide/Show can behave oddly)
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    WindowState = WindowState.Minimized;
+                }
+                else
+                {
+                    Hide();
+                    if (_trayIcon != null) _trayIcon.IsVisible = true;
+                }
+            }
+        }
     }
 
     private void ApplyLocalization()
@@ -347,8 +350,14 @@ public partial class MainWindow : Window
     {
         try
         {
+            if (_resourcesDisposed)
+                return;
+
             if (_trayIcon != null)
             {
+                _trayIcon.ToolTipText = Localization.Localizer.T("App_Title");
+                if (_trayShowItem != null) _trayShowItem.Header = Localization.Localizer.T("Tray_Show");
+                if (_trayExitItem != null) _trayExitItem.Header = Localization.Localizer.T("Tray_Exit");
                 _trayIcon.IsVisible = true;
                 return;
             }
@@ -361,19 +370,36 @@ public partial class MainWindow : Window
                 ToolTipText = Localization.Localizer.T("App_Title")
             };
             var menu = new NativeMenu();
-            var showItem = new NativeMenuItem("Show");
-            showItem.Click += (_, __) => { Show(); WindowState = WindowState.Normal; Activate(); };
-            var exitItem = new NativeMenuItem("Exit");
-            exitItem.Click += (_, __) => Close();
-            menu.Items.Add(showItem);
+            _trayShowItem = new NativeMenuItem("Show");
+            _trayShowItem.Click += TrayShowItem_Click;
+            _trayExitItem = new NativeMenuItem("Exit");
+            _trayExitItem.Click += TrayExitItem_Click;
+            menu.Items.Add(_trayShowItem);
             menu.Items.Add(new NativeMenuItemSeparator());
-            menu.Items.Add(exitItem);
+            menu.Items.Add(_trayExitItem);
             // Attach menu for right-click on all platforms (macOS shows it on left-click as well)
             _trayIcon.Menu = menu; // right-click menu
-            _trayIcon.Clicked += (_, __) => ToggleTrayShowHide();
+            _trayIcon.Clicked += TrayIcon_Clicked;
             _trayIcon.IsVisible = true;
         }
         catch { }
+    }
+
+    private void TrayShowItem_Click(object sender, EventArgs e)
+    {
+        Show();
+        WindowState = WindowState.Normal;
+        Activate();
+    }
+
+    private void TrayExitItem_Click(object sender, EventArgs e)
+    {
+        Close();
+    }
+
+    private void TrayIcon_Clicked(object sender, EventArgs e)
+    {
+        ToggleTrayShowHide();
     }
 
     private void ToggleTrayShowHide()
@@ -616,8 +642,14 @@ public partial class MainWindow : Window
 
     private void UpdateTimer_Elapsed(object sender, ElapsedEventArgs e)
     {
+        if (_resourcesDisposed)
+            return;
+
         Dispatcher.UIThread.InvokeAsync(() =>
         {
+            if (_resourcesDisposed)
+                return;
+
             // Update all running issues
             foreach (var issue in issues.Where(i => i.IsRunning))
             {
@@ -646,8 +678,14 @@ public partial class MainWindow : Window
 
     private void Ticker_Elapsed(object sender, ElapsedEventArgs e)
     {
+        if (_resourcesDisposed)
+            return;
+
         Dispatcher.UIThread.InvokeAsync(async () =>
         {
+            if (_resourcesDisposed)
+                return;
+
             await UpdateIssuesFromJira();
         });
     }
@@ -1209,9 +1247,9 @@ public partial class MainWindow : Window
         return null;
     }
 
-    private void MenuSettings_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private async void MenuSettings_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        // Kept for compatibility, actual handler wired to OpenSettingsAsync
+        await OpenSettingsAsync();
     }
 
     private void MenuAbout_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -1394,6 +1432,64 @@ public partial class MainWindow : Window
         Settings.Instance.WindowPositionY = Position.Y;
         Settings.Instance.Save();
         SaveIssues();
+        DisposeBackgroundResources();
+    }
+
+    private void DisposeBackgroundResources()
+    {
+        if (_resourcesDisposed)
+            return;
+
+        _resourcesDisposed = true;
+        _trayHandlingEnabled = false;
+
+        Opened -= MainWindow_Opened;
+        Closed -= MainWindow_Closed;
+        PropertyChanged -= MainWindow_PropertyChanged;
+
+        if (updateTimer != null)
+        {
+            updateTimer.Stop();
+            updateTimer.Elapsed -= UpdateTimer_Elapsed;
+            updateTimer.Dispose();
+        }
+
+        if (ticker != null)
+        {
+            ticker.Stop();
+            ticker.Elapsed -= Ticker_Elapsed;
+            ticker.Dispose();
+        }
+
+        DisposeTrayIcon();
+    }
+
+    private void DisposeTrayIcon()
+    {
+        if (_trayIcon == null)
+            return;
+
+        try
+        {
+            _trayIcon.Clicked -= TrayIcon_Clicked;
+
+            if (_trayShowItem != null)
+                _trayShowItem.Click -= TrayShowItem_Click;
+
+            if (_trayExitItem != null)
+                _trayExitItem.Click -= TrayExitItem_Click;
+
+            _trayIcon.IsVisible = false;
+            _trayIcon.Menu = null;
+            _trayIcon.Dispose();
+        }
+        catch { }
+        finally
+        {
+            _trayShowItem = null;
+            _trayExitItem = null;
+            _trayIcon = null;
+        }
     }
 
     private bool IsJiraEnabled

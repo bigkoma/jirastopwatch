@@ -8,6 +8,12 @@ namespace StopWatch;
 
 public partial class IssueControl : UserControl
 {
+    private static readonly Bitmap PlayIconBitmap = LoadBitmap("avares://StopWatch/icons/play26.png");
+    private static readonly Bitmap PauseIconBitmap = LoadBitmap("avares://StopWatch/icons/pause26.png");
+    private static readonly Bitmap LogWorkIconBitmap = LoadBitmap("avares://StopWatch/icons/posttime26.png");
+    private static readonly Bitmap DeleteIconBitmap = LoadBitmap("avares://StopWatch/icons/delete24.png");
+    private static readonly Bitmap AddIconBitmap = LoadBitmap("avares://StopWatch/icons/addissue22.png");
+
     public IssueViewModel Issue { get; set; }
 
     public event EventHandler<string> IssueKeyChanged;
@@ -27,6 +33,7 @@ public partial class IssueControl : UserControl
         tbIssueKey.TextChanged += TbIssueKey_TextChanged;
         tbIssueKey.KeyDown += TbIssueKey_KeyDown;
         tbComment.TextChanged += TbComment_TextChanged;
+        InitializeControlVisuals();
     }
 
     public void SetIssue(IssueViewModel issue)
@@ -123,16 +130,7 @@ public partial class IssueControl : UserControl
 
     private void SetStartStopIcon(bool isRunning)
     {
-        var uri = new Uri(isRunning ? "avares://StopWatch/icons/pause26.png" : "avares://StopWatch/icons/play26.png");
-        try
-        {
-            using var s = AssetLoader.Open(uri);
-            btnStartStop.Content = new Image { Source = new Bitmap(s), Width = 16, Height = 16 };
-        }
-        catch
-        {
-            btnStartStop.Content = isRunning ? "Stop" : "Start";
-        }
+        SetButtonImage(btnStartStop, imgStartStop, isRunning ? PauseIconBitmap : PlayIconBitmap, isRunning ? "Stop" : "Start", 16, 16);
     }
 
     public void SetIssueKeyReadOnly(bool readOnly)
@@ -198,26 +196,12 @@ public partial class IssueControl : UserControl
         return "0m";
     }
 
-    protected override void OnInitialized()
+    private void InitializeControlVisuals()
     {
-        base.OnInitialized();
         // Button captions/icons to match compact layout
         // Log work (calendar icon without exclamation)
-        try
-        {
-            var logUri = new Uri("avares://StopWatch/icons/posttime26.png");
-            using var ls = AssetLoader.Open(logUri);
-            btnLogWork.Content = new Image { Source = new Bitmap(ls), Width = 18, Height = 18 };
-        }
-        catch { btnLogWork.Content = "W"; }
-        // Delete icon
-        try
-        {
-            var delUri = new Uri("avares://StopWatch/icons/delete24.png");
-            using var ds = AssetLoader.Open(delUri);
-            btnRemove.Content = new Image { Source = new Bitmap(ds), Width = 16, Height = 16 };
-        }
-        catch { btnRemove.Content = "X"; }
+        SetButtonImage(btnLogWork, imgLogWork, LogWorkIconBitmap, "W", 18, 18);
+        SetAddRemoveMode(true);
         // Done/status mark as check emoji (smaller to avoid clipping)
         btnTransition.Content = new TextBlock { Text = " ✅ ", FontSize = 14, HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center };
 
@@ -234,25 +218,47 @@ public partial class IssueControl : UserControl
 
     public void SetAddRemoveMode(bool isLocal)
     {
+        if (isLocal)
+        {
+            SetButtonImage(btnRemove, imgRemove, DeleteIconBitmap, "X", 16, 16);
+            ToolTip.SetTip(btnRemove, Localization.Localizer.T("Tooltip_Delete"));
+        }
+        else
+        {
+            SetButtonImage(btnRemove, imgRemove, AddIconBitmap, "+", 18, 18);
+            ToolTip.SetTip(btnRemove, Localization.Localizer.T("Tooltip_AddLocal"));
+        }
+    }
+
+    private static Bitmap LoadBitmap(string assetUri)
+    {
         try
         {
-            if (isLocal)
+            using var stream = AssetLoader.Open(new Uri(assetUri));
+            return new Bitmap(stream);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private static void SetButtonImage(Button button, Image image, Bitmap bitmap, string fallbackText, double width, double height)
+    {
+        if (bitmap != null)
+        {
+            image.Source = bitmap;
+            image.Width = width;
+            image.Height = height;
+            if (!ReferenceEquals(button.Content, image))
             {
-                // Delete icon
-                var delUri = new Uri("avares://StopWatch/icons/delete24.png");
-                using var ds = AssetLoader.Open(delUri);
-                btnRemove.Content = new Image { Source = new Bitmap(ds), Width = 16, Height = 16 };
-                ToolTip.SetTip(btnRemove, Localization.Localizer.T("Tooltip_Delete"));
-            }
-            else
-            {
-                // Add icon (reuse top bar icon)
-                var addUri = new Uri("avares://StopWatch/icons/addissue22.png");
-                using var asrc = AssetLoader.Open(addUri);
-                btnRemove.Content = new Image { Source = new Bitmap(asrc), Width = 18, Height = 18 };
-                ToolTip.SetTip(btnRemove, Localization.Localizer.T("Tooltip_AddLocal"));
+                button.Content = image;
             }
         }
-        catch { }
+        else
+        {
+            image.Source = null;
+            button.Content = fallbackText;
+        }
     }
 }
